@@ -1,5 +1,5 @@
 import { Context } from 'telegraf';
-import { helpMarkdown, startMarkdown } from '../markdowns';
+import { helpMarkdown, startMarkdown, unsupportedCommandMarkdown } from '../markups';
 
 class CommandController {
   constructor() {}
@@ -10,6 +10,10 @@ class CommandController {
 
   onHelp(ctx: Context) {
     ctx.replyWithMarkdownV2(helpMarkdown);
+  }
+
+  onUnsupported(ctx: Context) {
+    ctx.replyWithMarkdownV2(unsupportedCommandMarkdown);
   }
 }
 
