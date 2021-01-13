@@ -1,18 +1,14 @@
-import { Context } from 'telegraf';
-
 import bot from './src/bot';
-
-import CommandController from './src/controllers/command.controller';
 
 import responseTimeMiddleware from './src/middlewares/responseTime.middleware';
 
-// bot.start((ctx: Context) => ctx.reply(startMarkdown, { parse_mode: 'MarkdownV2' }));
-// bot.help((ctx: Context) => ctx.reply(helpMarkdown, { parse_mode: 'MarkdownV2' }));
+import commandRouter from './src/routes/command.routes';
 
+// Log response time
 bot.use(responseTimeMiddleware);
 
-bot.start((ctx: Context) => CommandController.onStart(ctx));
-bot.help((ctx: Context) => CommandController.onHelp(ctx));
+// Hear command
+bot.hears(/\/.[^ ]+/g, commandRouter);
 
 // Start bot
 bot.launch().then(() => console.log('bot started successfully.'));
