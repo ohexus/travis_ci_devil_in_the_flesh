@@ -53,6 +53,16 @@ export default class RepoLinkClass extends RepoLinkModel {
     try {
       const foundDoc: RepoLinkDoc = await this.findOne({ $and: [{ owner }, { name }] });
 
+      return foundDoc;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  static async getLinkByUrl(url: RepoLinkDoc['url']): Promise<RepoLinkDoc> {
+    try {
+      const foundDoc: RepoLinkDoc = await this.findOne({ url });
+
       console.log(foundDoc);
 
       return foundDoc;

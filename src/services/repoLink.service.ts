@@ -21,6 +21,10 @@ class RepoLinkService {
     return await RepoLinkClass.getLinkByName(name, owner);
   }
 
+  async getLinkByUrl(url: RepoLinkDoc['url']): Promise<RepoLinkDoc> {
+    return await RepoLinkClass.getLinkByUrl(url);
+  }
+
   async getAllLinksByUser(telegramId: User['telegramId']): Promise<RepoLinkDoc[]> {
     const user = await UserService.getUserByTelegramId(telegramId);
 
