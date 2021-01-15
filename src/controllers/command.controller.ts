@@ -1,26 +1,27 @@
 import { LOGS } from '../constants';
 
 import { helpMarkdown, startMarkdown, unsupportedCommandMarkdown } from '../markups/commandResponses';
-import {
-  linkFormatMarkdown,
-  linkSuccessMarkdown,
-  linkErrorMarkdown,
-  linkWrongMarkdown,
-  linkRequiredMarkdown,
-} from '../markups/commandResponses/links';
-import { noReposMarkdown, repoRequiredMarkdown } from '../markups/commandResponses/repos';
-import { deleteErrorMarkdown, deleteSuccessMarkdown } from '../markups/commandResponses/delete';
 
-import { urlRegexp } from '../regexps';
+import {
+  noReposMarkdown,
+  ownerRequiredMarkdown,
+  repoErrorMarkdown,
+  repoFormatMarkdown,
+  repoRequiredMarkdown,
+  repoSuccessMarkdown,
+  titleRequiredMarkdown,
+} from '../markups/commandResponses/repos';
+import { deleteErrorMarkdown, deleteSuccessMarkdown } from '../markups/commandResponses/delete';
 
 import splitString from '../utils/helpers/splitString';
 import logger from '../utils/logger';
 
-import { RepoLinkService, UserService } from '../services';
+import { RepoService, UserService } from '../services';
 
 import Steps from '../enums/Steps';
 
 import BotContext from '../interfaces/BotContext';
+import getRepo from '../utils/http/requests/getRepo';
 
 class CommandController {
   constructor() {}
@@ -55,7 +56,7 @@ class CommandController {
     try {
       ctx.session = { step: Steps.LINK };
 
-      ctx.replyWithMarkdownV2(linkFormatMarkdown);
+      ctx.replyWithMarkdownV2(repoFormatMarkdown);
     } catch (err) {
       logger.error(err);
     }
@@ -64,31 +65,33 @@ class CommandController {
   async onLinkReply(ctx: BotContext) {
     try {
       if (!!ctx.message && !!ctx.message.text) {
-        const [name, url] = splitString(ctx.message.text);
+        const [title, owner, repoName] = splitString(ctx.message.text);
 
-        if (!name || !name.length) {
+        if (!title || !title.length) {
+          return ctx.replyWithMarkdownV2(titleRequiredMarkdown);
+        }
+
+        if (!owner || !owner.length) {
+          return ctx.replyWithMarkdownV2(ownerRequiredMarkdown);
+        }
+
+        if (!repoName || !repoName.length) {
           return ctx.replyWithMarkdownV2(repoRequiredMarkdown);
         }
 
-        if (!!url && !!url.length) {
-          if (urlRegexp.test(url)) {
-            const user = await UserService.getUserByTelegramId(ctx.message.from.id);
+        const user = await UserService.getUserByTelegramId(ctx.message.from.id);
 
-            if (!!user && !!ctx.session) {
-              const repoLink = await RepoLinkService.addLink({ owner: user.id, name, url });
-              await UserService.addLink(user.id, repoLink.id);
+        const githubRepo = await getRepo(owner, repoName);
 
-              ctx.session.step = null;
+        if (!!user && !!githubRepo && !!ctx.session) {
+          const repoDoc = await RepoService.addRepo({ owner: user.id, name: title, repo: githubRepo });
+          await UserService.addRepo(user.id, repoDoc.id);
 
-              ctx.replyWithMarkdownV2(linkSuccessMarkdown);
-            } else {
-              ctx.replyWithMarkdownV2(linkErrorMarkdown);
-            }
-          } else {
-            ctx.replyWithMarkdownV2(linkWrongMarkdown);
-          }
+          ctx.session.step = null;
+
+          ctx.replyWithMarkdownV2(repoSuccessMarkdown);
         } else {
-          ctx.replyWithMarkdownV2(linkRequiredMarkdown);
+          ctx.replyWithMarkdownV2(repoErrorMarkdown);
         }
       }
     } catch (err) {
@@ -99,7 +102,7 @@ class CommandController {
   async onList(ctx: BotContext) {
     try {
       if (!!ctx.message) {
-        const list = await RepoLinkService.getList(ctx.message.from.id, true);
+        const list = await RepoService.getList(ctx.message.from.id, true);
 
         if (!!list.length) {
           ctx.reply(`Your repositories:\n${list}`, { disable_web_page_preview: true });
@@ -117,7 +120,7 @@ class CommandController {
       if (!!ctx.message) {
         ctx.session = { step: Steps.DELETE };
 
-        const list = await RepoLinkService.getList(ctx.message.from.id, false);
+        const list = await RepoService.getList(ctx.message.from.id, false);
 
         if (!!list.length) {
           ctx.reply(`Please type one of your repositories provided below:\n${list}`, {
@@ -141,11 +144,11 @@ class CommandController {
           const user = await UserService.getUserByTelegramId(ctx.message.from.id);
 
           if (!!user && !!ctx.session) {
-            const repoLink = await RepoLinkService.getLinkByName(name, user.id);
+            const repo = await RepoService.getRepoByName(name, user.id);
 
-            if (!!repoLink) {
-              await RepoLinkService.deleteLink(repoLink.id);
-              await UserService.deleteLink(user.id, repoLink.id);
+            if (!!repo) {
+              await RepoService.deleteRepo(repo.id);
+              await UserService.deleteRepo(user.id, repo.id);
 
               ctx.session.step = null;
 
@@ -153,7 +156,7 @@ class CommandController {
 
               await this.onList(ctx);
             } else {
-              throw new Error(LOGS.ERROR.LINK.NOT_FOUND);
+              throw new Error(LOGS.ERROR.REPO.NOT_FOUND);
             }
           } else {
             ctx.replyWithMarkdownV2(deleteErrorMarkdown);

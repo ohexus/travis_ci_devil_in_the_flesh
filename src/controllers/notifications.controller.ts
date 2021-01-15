@@ -6,8 +6,7 @@ import { LOGS } from '../constants';
 
 import logger from '../utils/logger';
 
-import { UserService } from '../services';
-import repoLinkService from '../services/repoLink.service';
+import { RepoService, UserService } from '../services';
 
 import buildStatusHTML from '../markups/buildStatusHTML';
 
@@ -19,16 +18,16 @@ class NotificationsController {
   // TODO
   async postNotify(req: Request, res: Response): Promise<void> {
     try {
-      const { payload }: { payload: TravisPayload } = req.body;
+      const payload: TravisPayload = JSON.parse(req.body.payload);
 
       if (!payload || !payload.repository) {
         throw new Error(LOGS.ERROR.TRAVIS.WRONG_PAYLOAD);
       }
 
-      const repoLink = await repoLinkService.getLinkByUrl(payload.repository.url);
+      const repo = await RepoService.getRepoById(payload.repository.id);
 
-      if (!!repoLink) {
-        const user = await UserService.getUserById(repoLink.owner);
+      if (!!repo) {
+        const user = await UserService.getUserById(repo.owner);
 
         const buildHTML = buildStatusHTML(payload);
 

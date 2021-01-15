@@ -25,8 +25,8 @@ const LOGS = {
       NOT_FOUND: 'User not found!',
       DELETE: 'Failed to delete user',
     },
-    LINK: {
-      NOT_FOUND: 'Link not found!',
+    REPO: {
+      NOT_FOUND: 'Repo not found!',
     },
     TRAVIS: {
       WRONG_PAYLOAD: 'Wrong payload!',

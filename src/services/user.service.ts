@@ -1,7 +1,7 @@
 import { UserClass } from '../models';
 
 import { User, UserBasic, UserDoc } from '../interfaces/entities/User';
-import { RepoLinkDoc } from '../interfaces/entities/RepoLink';
+import { RepoDoc } from '../interfaces/entities/Repo';
 
 class UserService {
   async addUser(user: UserBasic): Promise<UserDoc> {
@@ -16,12 +16,12 @@ class UserService {
     return await UserClass.getUserByTelegramId(telegramId);
   }
 
-  async addLink(owner: UserDoc['id'], linkId: RepoLinkDoc['id']): Promise<UserDoc> {
-    return await UserClass.addLink(owner, linkId);
+  async addRepo(owner: UserDoc['id'], repoId: RepoDoc['id']): Promise<UserDoc> {
+    return await UserClass.addRepo(owner, repoId);
   }
 
-  async deleteLink(owner: UserDoc['id'], linkId: RepoLinkDoc['id']): Promise<UserDoc> {
-    return await UserClass.deleteLink(owner, linkId);
+  async deleteRepo(owner: UserDoc['id'], repoId: RepoDoc['id']): Promise<UserDoc> {
+    return await UserClass.deleteRepo(owner, repoId);
   }
 }
 

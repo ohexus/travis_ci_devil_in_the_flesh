@@ -1,4 +1,4 @@
-import RepoLinkService from './repoLink.service';
+import RepoService from './repo.service';
 import UserService from './user.service';
 
-export { RepoLinkService, UserService };
+export { RepoService, UserService };

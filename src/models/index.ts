@@ -1,4 +1,4 @@
-import RepoLinkClass from './repoLink.model';
+import RepoClass from './repo.model';
 import UserClass from './user.model';
 
-export { RepoLinkClass, UserClass };
+export { RepoClass, UserClass };

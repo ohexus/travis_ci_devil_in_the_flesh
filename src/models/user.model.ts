@@ -1,13 +1,13 @@
 import { Schema, model } from 'mongoose';
 
 import { User, UserBasic, UserDoc } from '../interfaces/entities/User';
-import { RepoLinkDoc } from '../interfaces/entities/RepoLink';
+import { RepoDoc } from '../interfaces/entities/Repo';
 
 const userSchema: Schema = new Schema(
   {
     telegramId: { type: Number, unique: true, required: true },
     chatId: { type: Number, unique: true, required: true },
-    repos: { type: [Schema.Types.ObjectId], ref: 'RepoLink', default: [] },
+    repos: { type: [Schema.Types.ObjectId], ref: 'Repo', default: [] },
   },
   { timestamps: true },
 );
@@ -51,12 +51,12 @@ export default class UserClass extends UserModel {
     }
   }
 
-  static async addLink(owner: UserDoc['id'], linkId: RepoLinkDoc['id']): Promise<UserDoc> {
+  static async addRepo(owner: UserDoc['id'], repoId: RepoDoc['id']): Promise<UserDoc> {
     try {
       const updatedDoc: UserDoc = await this.findByIdAndUpdate(
         owner,
         {
-          $addToSet: { repos: linkId },
+          $addToSet: { repos: repoId },
         },
         { new: true },
       );
@@ -67,12 +67,12 @@ export default class UserClass extends UserModel {
     }
   }
 
-  static async deleteLink(owner: UserDoc['id'], linkId: RepoLinkDoc['id']): Promise<UserDoc> {
+  static async deleteRepo(owner: UserDoc['id'], repoId: RepoDoc['id']): Promise<UserDoc> {
     try {
       const updatedDoc: UserDoc = await this.findByIdAndUpdate(
         owner,
         {
-          $pull: { repos: linkId },
+          $pull: { repos: repoId },
         },
         { new: true },
       );

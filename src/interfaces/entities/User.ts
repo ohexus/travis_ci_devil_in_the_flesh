@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 import { Chat, User as UserTelegram } from 'telegraf/typings/telegram-types';
-import { RepoLinkDoc } from './RepoLink';
+import { RepoDoc } from './Repo';
 
 export interface UserBasic {
   telegramId: UserTelegram['id'];
@@ -8,7 +8,7 @@ export interface UserBasic {
 }
 
 export interface User extends UserBasic {
-  repos: Array<RepoLinkDoc['id']>;
+  repos: Array<RepoDoc['id']>;
 }
 
 export interface UserDoc extends User, Document {}
