@@ -41,7 +41,7 @@ class RepoService {
     return listArray
       .map(
         (repoDoc, index) =>
-          `${repoDoc.name}${withLinks ? `: ${repoDoc.repo.url}` : index === listArray.length - 1 ? '' : ','}`,
+          `${repoDoc.name}${withLinks ? `: ${repoDoc.repo.html_url}` : index === listArray.length - 1 ? '' : ','}`,
       )
       .reduce((acc: string, curr: string) => acc + curr + '\n', '');
   }

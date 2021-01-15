@@ -1,17 +1,17 @@
 import { LOGS } from '../constants';
 
 import { helpMarkdown, startMarkdown, unsupportedCommandMarkdown } from '../markups/commandResponses';
-
+import { deleteErrorMarkdown, deleteNothingMarkdown, deleteSuccessMarkdown } from '../markups/commandResponses/delete';
 import {
   noReposMarkdown,
   ownerRequiredMarkdown,
   repoErrorMarkdown,
   repoFormatMarkdown,
+  repoNotExistsMarkdown,
   repoRequiredMarkdown,
-  repoSuccessMarkdown,
+  repoSavedMarkdown,
   titleRequiredMarkdown,
-} from '../markups/commandResponses/repos';
-import { deleteErrorMarkdown, deleteSuccessMarkdown } from '../markups/commandResponses/delete';
+} from '../markups/repos';
 
 import splitString from '../utils/helpers/splitString';
 import logger from '../utils/logger';
@@ -22,6 +22,7 @@ import Steps from '../enums/Steps';
 
 import BotContext from '../interfaces/BotContext';
 import getRepo from '../utils/http/requests/getRepo';
+import GithubRepo from '../interfaces/entities/GithubRepo';
 
 class CommandController {
   constructor() {}
@@ -83,13 +84,17 @@ class CommandController {
 
         const githubRepo = await getRepo(owner, repoName);
 
-        if (!!user && !!githubRepo && !!ctx.session) {
+        if (!githubRepo) {
+          return ctx.replyWithMarkdownV2(repoNotExistsMarkdown);
+        }
+
+        if (!!user && !!ctx.session) {
           const repoDoc = await RepoService.addRepo({ owner: user.id, name: title, repo: githubRepo });
           await UserService.addRepo(user.id, repoDoc.id);
 
           ctx.session.step = null;
 
-          ctx.replyWithMarkdownV2(repoSuccessMarkdown);
+          ctx.replyWithMarkdownV2(repoSavedMarkdown);
         } else {
           ctx.replyWithMarkdownV2(repoErrorMarkdown);
         }
@@ -127,7 +132,7 @@ class CommandController {
             disable_web_page_preview: true,
           });
         } else {
-          ctx.replyWithMarkdownV2(noReposMarkdown);
+          ctx.replyWithMarkdownV2(deleteNothingMarkdown);
         }
       }
     } catch (err) {

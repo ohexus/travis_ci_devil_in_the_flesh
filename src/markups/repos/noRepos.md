@@ -1,2 +1,2 @@
-Nothing to delete\.
-You can add repo by using /link command\.
+You have not linked any repos\!
+Add one by using /link command\.

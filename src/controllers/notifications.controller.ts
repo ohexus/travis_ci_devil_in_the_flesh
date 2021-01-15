@@ -26,6 +26,8 @@ class NotificationsController {
 
       const repo = await RepoService.getRepoById(payload.repository.id);
 
+      console.log(repo);
+
       if (!!repo) {
         const user = await UserService.getUserById(repo.owner);
 
