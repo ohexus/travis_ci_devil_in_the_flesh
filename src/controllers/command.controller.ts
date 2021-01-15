@@ -11,134 +11,174 @@ import { deleteErrorMarkdown, deleteSuccessMarkdown } from '../markups/commandRe
 
 import { urlRegexp } from '../regexps';
 
+import splitString from '../utils/helpers/splitString';
+import logger from '../utils/logger';
+
 import { RepoLinkService, UserService } from '../services';
 
 import Steps from '../enums/Steps';
 
 import BotContext from '../interfaces/BotContext';
-import splitString from '../utils/helpers/splitString';
 
 class CommandController {
   constructor() {}
 
   async onStart(ctx: BotContext) {
-    if (!!ctx.message) {
-      const telegramId = ctx.message.from.id;
-      const chatId = ctx.message.chat.id;
+    try {
+      if (!!ctx.message) {
+        const telegramId = ctx.message.from.id;
+        const chatId = ctx.message.chat.id;
 
-      const user = await UserService.getUserByTelegramId(telegramId);
-      if (!user) {
-        await UserService.addUser({ telegramId, chatId });
+        const user = await UserService.getUserByTelegramId(telegramId);
+        if (!user) {
+          await UserService.addUser({ telegramId, chatId });
+        }
       }
-    }
 
-    ctx.replyWithMarkdownV2(startMarkdown);
+      ctx.replyWithMarkdownV2(startMarkdown);
+    } catch (err) {
+      logger.error(err);
+    }
   }
 
   async onHelp(ctx: BotContext) {
-    ctx.replyWithMarkdownV2(helpMarkdown);
+    try {
+      ctx.replyWithMarkdownV2(helpMarkdown);
+    } catch (err) {
+      logger.error(err);
+    }
   }
 
   async onLink(ctx: BotContext) {
-    ctx.session = { step: Steps.LINK };
+    try {
+      ctx.session = { step: Steps.LINK };
 
-    ctx.replyWithMarkdownV2(linkFormatMarkdown);
+      ctx.replyWithMarkdownV2(linkFormatMarkdown);
+    } catch (err) {
+      logger.error(err);
+    }
   }
 
   async onLinkReply(ctx: BotContext) {
-    if (!!ctx.message && !!ctx.message.text) {
-      const [name, url] = splitString(ctx.message.text);
+    try {
+      if (!!ctx.message && !!ctx.message.text) {
+        const [name, url] = splitString(ctx.message.text);
 
-      if (!name || !name.length) {
-        return ctx.replyWithMarkdownV2(repoRequiredMarkdown);
-      }
+        if (!name || !name.length) {
+          return ctx.replyWithMarkdownV2(repoRequiredMarkdown);
+        }
 
-      if (!!url && !!url.length) {
-        if (urlRegexp.test(url)) {
-          const user = await UserService.getUserByTelegramId(ctx.message.from.id);
+        if (!!url && !!url.length) {
+          if (urlRegexp.test(url)) {
+            const user = await UserService.getUserByTelegramId(ctx.message.from.id);
 
-          if (!!user && !!ctx.session) {
-            const repoLink = await RepoLinkService.addLink({ owner: user.id, name, url });
-            await UserService.addLink(user.id, repoLink.id);
+            if (!!user && !!ctx.session) {
+              const repoLink = await RepoLinkService.addLink({ owner: user.id, name, url });
+              await UserService.addLink(user.id, repoLink.id);
 
-            ctx.session.step = null;
+              ctx.session.step = null;
 
-            ctx.replyWithMarkdownV2(linkSuccessMarkdown);
+              ctx.replyWithMarkdownV2(linkSuccessMarkdown);
+            } else {
+              ctx.replyWithMarkdownV2(linkErrorMarkdown);
+            }
           } else {
-            ctx.replyWithMarkdownV2(linkErrorMarkdown);
+            ctx.replyWithMarkdownV2(linkWrongMarkdown);
           }
         } else {
-          ctx.replyWithMarkdownV2(linkWrongMarkdown);
+          ctx.replyWithMarkdownV2(linkRequiredMarkdown);
         }
-      } else {
-        ctx.replyWithMarkdownV2(linkRequiredMarkdown);
       }
+    } catch (err) {
+      logger.error(err);
     }
   }
 
   async onList(ctx: BotContext) {
-    if (!!ctx.message) {
-      const list = await RepoLinkService.getList(ctx.message.from.id, true);
+    try {
+      if (!!ctx.message) {
+        const list = await RepoLinkService.getList(ctx.message.from.id, true);
 
-      if (!!list.length) {
-        ctx.reply(`Your repositories:\n${list}`, { disable_web_page_preview: true });
-      } else {
-        ctx.replyWithMarkdownV2(noReposMarkdown);
+        if (!!list.length) {
+          ctx.reply(`Your repositories:\n${list}`, { disable_web_page_preview: true });
+        } else {
+          ctx.replyWithMarkdownV2(noReposMarkdown);
+        }
       }
+    } catch (err) {
+      logger.error(err);
     }
   }
 
   async onDelete(ctx: BotContext) {
-    if (!!ctx.message) {
-      ctx.session = { step: Steps.DELETE };
+    try {
+      if (!!ctx.message) {
+        ctx.session = { step: Steps.DELETE };
 
-      const list = await RepoLinkService.getList(ctx.message.from.id, false);
+        const list = await RepoLinkService.getList(ctx.message.from.id, false);
 
-      if (!!list.length) {
-        ctx.reply(`Please type one of your repositories provided below:\n${list}`, { disable_web_page_preview: true });
-      } else {
-        ctx.replyWithMarkdownV2(noReposMarkdown);
+        if (!!list.length) {
+          ctx.reply(`Please type one of your repositories provided below:\n${list}`, {
+            disable_web_page_preview: true,
+          });
+        } else {
+          ctx.replyWithMarkdownV2(noReposMarkdown);
+        }
       }
+    } catch (err) {
+      logger.error(err);
     }
   }
 
   async onDeleteReply(ctx: BotContext) {
-    if (!!ctx.message && !!ctx.message.text) {
-      const [name] = splitString(ctx.message.text);
+    try {
+      if (!!ctx.message && !!ctx.message.text) {
+        const [name] = splitString(ctx.message.text);
 
-      if (!!name && !!name.length) {
-        const user = await UserService.getUserByTelegramId(ctx.message.from.id);
+        if (!!name && !!name.length) {
+          const user = await UserService.getUserByTelegramId(ctx.message.from.id);
 
-        if (!!user && !!ctx.session) {
-          const repoLink = await RepoLinkService.getLinkByName(name, user.id);
+          if (!!user && !!ctx.session) {
+            const repoLink = await RepoLinkService.getLinkByName(name, user.id);
 
-          await RepoLinkService.deleteLink(repoLink.id);
-          await UserService.deleteLink(user.id, repoLink.id);
+            await RepoLinkService.deleteLink(repoLink.id);
+            await UserService.deleteLink(user.id, repoLink.id);
 
-          ctx.session.step = null;
+            ctx.session.step = null;
 
-          ctx.replyWithMarkdownV2(deleteSuccessMarkdown);
+            ctx.replyWithMarkdownV2(deleteSuccessMarkdown);
 
-          await this.onList(ctx);
+            await this.onList(ctx);
+          } else {
+            ctx.replyWithMarkdownV2(deleteErrorMarkdown);
+          }
         } else {
-          ctx.replyWithMarkdownV2(deleteErrorMarkdown);
+          ctx.replyWithMarkdownV2(repoRequiredMarkdown);
         }
-      } else {
-        ctx.replyWithMarkdownV2(repoRequiredMarkdown);
       }
+    } catch (err) {
+      logger.error(err);
     }
   }
 
   async onUnsupported(ctx: BotContext) {
-    ctx.replyWithMarkdownV2(unsupportedCommandMarkdown);
+    try {
+      ctx.replyWithMarkdownV2(unsupportedCommandMarkdown);
+    } catch (err) {
+      logger.error(err);
+    }
   }
 
   async onCancel(ctx: BotContext) {
-    if (!!ctx.session) {
-      ctx.session.step = null;
-    }
+    try {
+      if (!!ctx.session) {
+        ctx.session.step = null;
+      }
 
-    ctx.replyWithMarkdownV2(helpMarkdown);
+      ctx.replyWithMarkdownV2(helpMarkdown);
+    } catch (err) {
+      logger.error(err);
+    }
   }
 }
 
