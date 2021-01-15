@@ -1,21 +1,22 @@
+import { helpMarkdown, startMarkdown, unsupportedCommandMarkdown } from '../markups/commandResponses';
 import {
-  helpMarkdown,
-  linkErrorMarkdown,
   linkFormatMarkdown,
-  linkRequiredMarkdown,
   linkSuccessMarkdown,
+  linkErrorMarkdown,
   linkWrongMarkdown,
-  startMarkdown,
-  unsupportedCommandMarkdown,
-} from '../markups/commandResponses';
+  linkRequiredMarkdown,
+} from '../markups/commandResponses/links';
+import { noReposMarkdown, repoRequiredMarkdown } from '../markups/commandResponses/repos';
+import { deleteErrorMarkdown, deleteSuccessMarkdown } from '../markups/commandResponses/delete';
 
-import { multipleSpaces, urlRegexp } from '../regexps';
+import { urlRegexp } from '../regexps';
 
 import { RepoLinkService, UserService } from '../services';
 
 import Steps from '../enums/Steps';
 
 import BotContext from '../interfaces/BotContext';
+import splitString from '../utils/helpers/splitString';
 
 class CommandController {
   constructor() {}
@@ -45,7 +46,11 @@ class CommandController {
 
   async onLinkReply(ctx: BotContext) {
     if (!!ctx.message && !!ctx.message.text) {
-      const [name, link] = ctx.message.text.replace(multipleSpaces, ' ').trim().split(' ');
+      const [name, link] = splitString(ctx.message.text);
+
+      if (!name || !name.length) {
+        return ctx.replyWithMarkdownV2(repoRequiredMarkdown);
+      }
 
       if (!!link && !!link.length) {
         if (urlRegexp.test(link)) {
@@ -72,18 +77,55 @@ class CommandController {
 
   async onList(ctx: BotContext) {
     if (!!ctx.message) {
-      const listArray = await RepoLinkService.getAllLinksByUser(ctx.message.from.id);
+      const list = await RepoLinkService.getList(ctx.message.from.id, true);
 
-      const list = listArray
-        .map((repo) => `${repo.name}: ${repo.link}`)
-        .reduce((acc: string, curr: string) => acc + curr + '\n', '');
-
-      ctx.reply(list);
+      if (!!list.length) {
+        ctx.reply(`Your repositories:\n${list}`, { disable_web_page_preview: true });
+      } else {
+        ctx.replyWithMarkdownV2(noReposMarkdown);
+      }
     }
   }
 
   async onDelete(ctx: BotContext) {
-    ctx.reply('delete');
+    if (!!ctx.message) {
+      ctx.session = { step: Steps.DELETE };
+
+      const list = await RepoLinkService.getList(ctx.message.from.id, false);
+
+      if (!!list.length) {
+        ctx.reply(`Please type one of your repositories provided below:\n${list}`, { disable_web_page_preview: true });
+      } else {
+        ctx.replyWithMarkdownV2(noReposMarkdown);
+      }
+    }
+  }
+
+  async onDeleteReply(ctx: BotContext) {
+    if (!!ctx.message && !!ctx.message.text) {
+      const [name] = splitString(ctx.message.text);
+
+      if (!!name && !!name.length) {
+        const user = await UserService.getUserByTelegramId(ctx.message.from.id);
+
+        if (!!user && !!ctx.session) {
+          const repoLink = await RepoLinkService.getLinkByName(name, user.id);
+
+          await RepoLinkService.deleteLink(repoLink.id);
+          await UserService.deleteLink(user.id, repoLink.id);
+
+          ctx.session.step = null;
+
+          ctx.replyWithMarkdownV2(deleteSuccessMarkdown);
+
+          await this.onList(ctx);
+        } else {
+          ctx.replyWithMarkdownV2(deleteErrorMarkdown);
+        }
+      } else {
+        ctx.replyWithMarkdownV2(repoRequiredMarkdown);
+      }
+    }
   }
 
   async onUnsupported(ctx: BotContext) {
