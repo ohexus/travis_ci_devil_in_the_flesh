@@ -25,6 +25,9 @@ const LOGS = {
       NOT_FOUND: 'User not found!',
       DELETE: 'Failed to delete user',
     },
+    LINK: {
+      NOT_FOUND: 'Link not found!',
+    },
   },
 };
 
