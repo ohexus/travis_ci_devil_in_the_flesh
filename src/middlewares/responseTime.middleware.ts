@@ -1,8 +1,7 @@
-import { Context } from 'telegraf';
-
+import BotContext from '../interfaces/BotContext';
 import NextFunction from '../interfaces/NextFunction';
 
-export default async function responseTimeMiddleware(ctx: Context, next: NextFunction) {
+export default async function responseTimeMiddleware(ctx: BotContext, next: NextFunction) {
   const start = new Date().getMilliseconds();
 
   await next();
