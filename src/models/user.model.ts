@@ -6,6 +6,7 @@ import { RepoLinkDoc } from '../interfaces/entities/RepoLink';
 const userSchema: Schema = new Schema(
   {
     telegramId: { type: Number, unique: true, required: true },
+    chatId: { type: Number, unique: true, required: true },
     repos: { type: [Schema.Types.ObjectId], ref: 'RepoLink', default: [] },
   },
   { timestamps: true },
@@ -16,10 +17,11 @@ const UserModel = model<UserDoc>('User', userSchema);
 export default class UserClass extends UserModel {
   static async addUser(user: UserBasic): Promise<UserDoc> {
     try {
-      const { telegramId } = user;
+      const { telegramId, chatId } = user;
 
       const createdDoc: UserDoc = await this.create({
         telegramId,
+        chatId,
         repos: [],
       });
 

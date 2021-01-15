@@ -24,10 +24,11 @@ class CommandController {
   async onStart(ctx: BotContext) {
     if (!!ctx.message) {
       const telegramId = ctx.message.from.id;
+      const chatId = ctx.message.chat.id;
 
       const user = await UserService.getUserByTelegramId(telegramId);
       if (!user) {
-        await UserService.addUser({ telegramId });
+        await UserService.addUser({ telegramId, chatId });
       }
     }
 
