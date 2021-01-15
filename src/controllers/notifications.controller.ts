@@ -1,11 +1,14 @@
 import { Request, Response } from 'express';
+
 import bot from '../bot';
-import buildStatusHTML from '../markups/buildStatus';
+
+import buildStatusHTML from '../markups/buildStatusHTML';
 
 class NotificationsController {
   constructor() {}
 
-  postNotify(req: Request, res: Response) {
+  // TODO
+  async postNotify(req: Request, res: Response) {
     console.log(req.body);
 
     const buildHTML = buildStatusHTML(req.body);
