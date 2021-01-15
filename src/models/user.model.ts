@@ -39,7 +39,7 @@ export default class UserClass extends UserModel {
     }
   }
 
-  static async addLink(owner: UserDoc['_id'], linkId: RepoLinkDoc['_id']): Promise<UserDoc> {
+  static async addLink(owner: UserDoc['id'], linkId: RepoLinkDoc['id']): Promise<UserDoc> {
     try {
       const updatedDoc: UserDoc = await this.findByIdAndUpdate(
         owner,
@@ -55,7 +55,7 @@ export default class UserClass extends UserModel {
     }
   }
 
-  static async deleteLink(owner: UserDoc['_id'], linkId: RepoLinkDoc['_id']): Promise<UserDoc> {
+  static async deleteLink(owner: UserDoc['id'], linkId: RepoLinkDoc['id']): Promise<UserDoc> {
     try {
       const updatedDoc: UserDoc = await this.findByIdAndUpdate(
         owner,

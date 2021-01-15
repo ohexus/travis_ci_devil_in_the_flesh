@@ -29,7 +29,7 @@ export default class RepoLinkClass extends RepoLinkModel {
     }
   }
 
-  static async deleteLink(id: RepoLinkDoc['_id']): Promise<RepoLinkDoc> {
+  static async deleteLink(id: RepoLinkDoc['id']): Promise<RepoLinkDoc> {
     try {
       const deletedDoc: RepoLinkDoc = await this.findByIdAndDelete(id);
 
@@ -39,7 +39,7 @@ export default class RepoLinkClass extends RepoLinkModel {
     }
   }
 
-  static async getLink(id: RepoLinkDoc['_id']): Promise<RepoLinkDoc> {
+  static async getLink(id: RepoLinkDoc['id']): Promise<RepoLinkDoc> {
     try {
       const foundDoc: RepoLinkDoc = await this.findById(id);
 
@@ -49,7 +49,7 @@ export default class RepoLinkClass extends RepoLinkModel {
     }
   }
 
-  static async getAllLinksByUser(owner: UserDoc['_id']): Promise<RepoLinkDoc[]> {
+  static async getAllLinksByUser(owner: UserDoc['id']): Promise<RepoLinkDoc[]> {
     try {
       const foundDocs: RepoLinkDoc[] = await this.find({ owner });
 

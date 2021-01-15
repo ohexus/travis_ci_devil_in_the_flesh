@@ -2,7 +2,7 @@ import { Document } from 'mongoose';
 import { UserDoc } from './User';
 
 export interface RepoLink {
-  owner: UserDoc['_id'];
+  owner: UserDoc['id'];
 
   name: string;
   link: string;

@@ -7,7 +7,7 @@ export interface UserBasic {
 }
 
 export interface User extends UserBasic {
-  repos: Array<RepoLinkDoc['_id']>;
+  repos: Array<RepoLinkDoc['id']>;
 }
 
 export interface UserDoc extends User, Document {}
