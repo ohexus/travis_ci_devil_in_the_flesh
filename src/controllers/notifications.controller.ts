@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 
 import bot from '../bot';
 
+import { LOGS } from '../constants';
+
 import logger from '../utils/logger';
 
 import { UserService } from '../services';
@@ -18,6 +20,10 @@ class NotificationsController {
   async postNotify(req: Request, res: Response): Promise<void> {
     try {
       const { payload }: { payload: TravisPayload } = req.body;
+
+      if (!payload || !payload.repository) {
+        throw new Error(LOGS.ERROR.TRAVIS.WRONG_PAYLOAD);
+      }
 
       const repoLink = await repoLinkService.getLinkByUrl(payload.repository.url);
 

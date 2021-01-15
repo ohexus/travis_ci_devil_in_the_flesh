@@ -28,6 +28,9 @@ const LOGS = {
     LINK: {
       NOT_FOUND: 'Link not found!',
     },
+    TRAVIS: {
+      WRONG_PAYLOAD: 'Wrong payload!',
+    },
   },
 };
 
