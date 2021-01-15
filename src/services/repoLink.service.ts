@@ -17,11 +17,11 @@ class RepoLinkService {
     return await RepoLinkClass.getLink(id);
   }
 
-  async getLinkByName(name: RepoLinkDoc['name'], owner: UserDoc['id']): Promise<RepoLinkDoc> {
+  async getLinkByName(name: RepoLinkDoc['name'], owner: UserDoc['id']): Promise<RepoLinkDoc | null> {
     return await RepoLinkClass.getLinkByName(name, owner);
   }
 
-  async getLinkByUrl(url: RepoLinkDoc['url']): Promise<RepoLinkDoc> {
+  async getLinkByUrl(url: RepoLinkDoc['url']): Promise<RepoLinkDoc | null> {
     return await RepoLinkClass.getLinkByUrl(url);
   }
 
