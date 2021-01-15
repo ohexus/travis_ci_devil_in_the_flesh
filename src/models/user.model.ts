@@ -29,6 +29,16 @@ export default class UserClass extends UserModel {
     }
   }
 
+  static async getUserById(id: UserDoc['id']): Promise<UserDoc> {
+    try {
+      const userDoc: UserDoc = await this.findById(id);
+
+      return userDoc;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   static async getUserByTelegramId(telegramId: User['telegramId']): Promise<UserDoc | null> {
     try {
       const userDoc: UserDoc | null = await this.findOne({ telegramId });

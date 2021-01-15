@@ -8,6 +8,10 @@ class UserService {
     return await UserClass.addUser(user);
   }
 
+  async getUserById(id: UserDoc['id']): Promise<UserDoc> {
+    return await UserClass.getUserById(id);
+  }
+
   async getUserByTelegramId(telegramId: User['telegramId']): Promise<UserDoc | null> {
     return await UserClass.getUserByTelegramId(telegramId);
   }
