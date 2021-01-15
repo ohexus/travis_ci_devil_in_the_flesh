@@ -3,6 +3,6 @@ import NotificationsController from '../controllers/notifications.controller';
 
 const appRouter = Router();
 
-appRouter.use('/notify', NotificationsController.postNotify);
+appRouter.post('/notify', NotificationsController.postNotify);
 
 export default appRouter;
