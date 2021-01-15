@@ -46,18 +46,18 @@ class CommandController {
 
   async onLinkReply(ctx: BotContext) {
     if (!!ctx.message && !!ctx.message.text) {
-      const [name, link] = splitString(ctx.message.text);
+      const [name, url] = splitString(ctx.message.text);
 
       if (!name || !name.length) {
         return ctx.replyWithMarkdownV2(repoRequiredMarkdown);
       }
 
-      if (!!link && !!link.length) {
-        if (urlRegexp.test(link)) {
+      if (!!url && !!url.length) {
+        if (urlRegexp.test(url)) {
           const user = await UserService.getUserByTelegramId(ctx.message.from.id);
 
           if (!!user && !!ctx.session) {
-            const repoLink = await RepoLinkService.addLink({ owner: user.id, name, link });
+            const repoLink = await RepoLinkService.addLink({ owner: user.id, name, url });
             await UserService.addLink(user.id, repoLink.id);
 
             ctx.session.step = null;

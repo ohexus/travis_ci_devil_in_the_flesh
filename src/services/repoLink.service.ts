@@ -35,7 +35,7 @@ class RepoLinkService {
     const listArray = await this.getAllLinksByUser(telegramId);
 
     return listArray
-      .map((repo) => `${repo.name}${withLinks ? `: ${repo.link}` : ''}`)
+      .map((repo) => `${repo.name}${withLinks ? `: ${repo.url}` : ''}`)
       .reduce((acc: string, curr: string) => acc + curr + '\n', '');
   }
 }

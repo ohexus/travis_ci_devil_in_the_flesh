@@ -7,7 +7,7 @@ const repoLinkSchema: Schema = new Schema(
   {
     owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String, unique: true, required: true },
-    link: { type: String, unique: true, required: true },
+    url: { type: String, unique: true, required: true },
   },
   { timestamps: true },
 );
@@ -15,12 +15,12 @@ const repoLinkSchema: Schema = new Schema(
 const RepoLinkModel = model<RepoLinkDoc>('RepoLink', repoLinkSchema);
 
 export default class RepoLinkClass extends RepoLinkModel {
-  static async addLink({ owner, name, link }: RepoLink): Promise<RepoLinkDoc> {
+  static async addLink({ owner, name, url }: RepoLink): Promise<RepoLinkDoc> {
     try {
       const createdDoc: RepoLinkDoc = await this.create({
         owner,
         name,
-        link,
+        url,
       });
 
       return createdDoc;

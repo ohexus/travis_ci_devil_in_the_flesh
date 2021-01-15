@@ -5,7 +5,7 @@ export interface RepoLink {
   owner: UserDoc['id'];
 
   name: string;
-  link: string;
+  url: string;
 }
 
 export interface RepoLinkDoc extends RepoLink, Document {}
