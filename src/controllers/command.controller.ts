@@ -1,3 +1,5 @@
+import { LOGS } from '../constants';
+
 import { helpMarkdown, startMarkdown, unsupportedCommandMarkdown } from '../markups/commandResponses';
 import {
   linkFormatMarkdown,
@@ -141,14 +143,18 @@ class CommandController {
           if (!!user && !!ctx.session) {
             const repoLink = await RepoLinkService.getLinkByName(name, user.id);
 
-            await RepoLinkService.deleteLink(repoLink.id);
-            await UserService.deleteLink(user.id, repoLink.id);
+            if (!!repoLink) {
+              await RepoLinkService.deleteLink(repoLink.id);
+              await UserService.deleteLink(user.id, repoLink.id);
 
-            ctx.session.step = null;
+              ctx.session.step = null;
 
-            ctx.replyWithMarkdownV2(deleteSuccessMarkdown);
+              ctx.replyWithMarkdownV2(deleteSuccessMarkdown);
 
-            await this.onList(ctx);
+              await this.onList(ctx);
+            } else {
+              throw new Error(LOGS.ERROR.LINK.NOT_FOUND);
+            }
           } else {
             ctx.replyWithMarkdownV2(deleteErrorMarkdown);
           }
