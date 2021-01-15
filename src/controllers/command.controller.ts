@@ -89,6 +89,14 @@ class CommandController {
   async onUnsupported(ctx: BotContext) {
     ctx.replyWithMarkdownV2(unsupportedCommandMarkdown);
   }
+
+  async onCancel(ctx: BotContext) {
+    if (!!ctx.session) {
+      ctx.session.step = null;
+    }
+
+    ctx.replyWithMarkdownV2(helpMarkdown);
+  }
 }
 
 export default new CommandController();

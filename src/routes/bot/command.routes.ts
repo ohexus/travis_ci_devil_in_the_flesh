@@ -30,6 +30,10 @@ export default function commandRouter(ctx: BotContext) {
       CommandController.onDelete(ctx);
       break;
 
+    case Commands.CANCEL:
+      CommandController.onCancel(ctx);
+      break;
+
     default:
       CommandController.onUnsupported(ctx);
       break;

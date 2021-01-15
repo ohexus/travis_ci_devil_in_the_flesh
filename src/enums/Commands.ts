@@ -4,6 +4,7 @@ enum Commands {
   LINK = 'link',
   LIST = 'list',
   DELETE = 'delete',
+  CANCEL = 'cancel',
 }
 
 export default Commands;
