@@ -1,7 +1,6 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 import config from 'config';
-import log4js from 'log4js';
 
 import appRouter from './src/routes/app.routes';
 
@@ -12,9 +11,6 @@ import { LOGS } from './src/constants';
 import bot from './src/bot';
 
 const app: Application = express();
-
-const logger = log4js.getLogger();
-logger.level = process.env.LOGGER_LVL || config.get('LOGGER_LVL');
 
 const dbConnection = connectDB();
 if (!dbConnection) {

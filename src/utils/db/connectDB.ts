@@ -1,10 +1,9 @@
 import mongoose from 'mongoose';
 import config from 'config';
 
-import { isProduction, LOGS } from '../../constants';
+import logger from '../logger';
 
-import log4js from 'log4js';
-const logger = log4js.getLogger();
+import { isProduction, LOGS } from '../../constants';
 
 const MONGO_URI: string = process.env.MONGO_URI || config.get('MONGO_URI');
 
