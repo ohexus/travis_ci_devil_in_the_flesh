@@ -1,10 +1,12 @@
+import { BuildStatuses, BuildStatusMessages } from '../enums/BuildStatuses';
+
 export default interface TravisPayload {
   id: number;
   number: string;
-  status: 0 | 1;
-  result: 0 | 1;
-  status_message: 'Passed' | 'Errored';
-  result_message: 'Passed' | 'Errored';
+  status: BuildStatuses;
+  result: BuildStatuses;
+  status_message: BuildStatusMessages;
+  result_message: BuildStatusMessages;
   started_at: string;
   finished_at: string;
   duration: number;
