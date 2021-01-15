@@ -26,6 +26,14 @@ class RepoLinkService {
 
     return [];
   }
+
+  async getList(telegramId: User['telegramId'], withLinks: boolean = true): Promise<string> {
+    const listArray = await this.getAllLinksByUser(telegramId);
+
+    return listArray
+      .map((repo) => `${repo.name}${withLinks ? `: ${repo.link}` : ''}`)
+      .reduce((acc: string, curr: string) => acc + curr + '\n', '');
+  }
 }
 
 export default new RepoLinkService();
