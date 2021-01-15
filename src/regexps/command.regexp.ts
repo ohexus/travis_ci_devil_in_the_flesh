@@ -1,3 +1,3 @@
-const commandRegexp = /^\/.[^ ]+$/g;
+const commandRegexp = /^\/.[^ ]+$/;
 
 export default commandRegexp;

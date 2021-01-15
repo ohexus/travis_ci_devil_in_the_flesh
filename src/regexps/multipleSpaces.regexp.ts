@@ -1,3 +1,3 @@
-const multipleSpaces = /[ ]{2,}/g;
+const multipleSpaces = /[ ]{2,}/;
 
 export default multipleSpaces;
