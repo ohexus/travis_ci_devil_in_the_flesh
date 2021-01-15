@@ -2,7 +2,7 @@ import { RepoLinkClass } from '../models';
 import { UserService } from '.';
 
 import { RepoLink, RepoLinkDoc } from '../interfaces/entities/RepoLink';
-import { User } from '../interfaces/entities/User';
+import { User, UserDoc } from '../interfaces/entities/User';
 
 class RepoLinkService {
   async addLink(repoLink: RepoLink): Promise<RepoLinkDoc> {
@@ -15,6 +15,10 @@ class RepoLinkService {
 
   async getLink(id: RepoLinkDoc['id']): Promise<RepoLinkDoc> {
     return await RepoLinkClass.getLink(id);
+  }
+
+  async getLinkByName(name: RepoLinkDoc['name'], owner: UserDoc['id']): Promise<RepoLinkDoc> {
+    return await RepoLinkClass.getLinkByName(name, owner);
   }
 
   async getAllLinksByUser(telegramId: User['telegramId']): Promise<RepoLinkDoc[]> {

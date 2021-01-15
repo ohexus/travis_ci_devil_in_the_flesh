@@ -49,6 +49,18 @@ export default class RepoLinkClass extends RepoLinkModel {
     }
   }
 
+  static async getLinkByName(name: RepoLinkDoc['name'], owner: UserDoc['id']): Promise<RepoLinkDoc> {
+    try {
+      const foundDoc: RepoLinkDoc = await this.findOne({ $and: [{ owner }, { name }] });
+
+      console.log(foundDoc);
+
+      return foundDoc;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   static async getAllLinksByUser(owner: UserDoc['id']): Promise<RepoLinkDoc[]> {
     try {
       const foundDocs: RepoLinkDoc[] = await this.find({ owner });
