@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+- stable
+script:
+- echo "skipping tests"
+deploy:
+  provider: heroku
+  app: travis-devil
+  api_key:
+    secure: l/GkjdsfU/JyNIBxyQnXw/AhGktFyev4nCoHUTKOYchZ1cLZIPufpf75yhUDS6S06gekHwPo+6bYFhI5ehC6GjpDy02aKiPVxk5K/ixPjsY8I6q2mQr4L4d6DAp3IctHzsN8X8oYcQ7FMncj3x+6eBxOHdN9j7adqNLUc28phs59/xisioqUbzSQnvsx+3V1AOvn265KS9JgoQ6K7ZGUlOvC32gg56GXmncK+9P2QZYqTS8SDUcS60D5ej4+5NIPwQpdrCltZqRz8VOm8SyQREJh+tvTV5w161ZDnKUpyW9QumvCrC3kqivJ3yMrnd0Gib02zHOlGSAt8v2tHcfwAV7i03XsJ57eyrQjo+xsOVOxfgBMnYeTcAjFrSxMl0U20pZSlDWsoZRk6WrSJlgj9tosNcCtGYWtTRG8hJ/x0EMMpTBhWlkHDufPhWdoHCEfF7wsvtIPXl8CRHGW4Ylku58QmrG/hqg1o0pBoByVlqWw09B3fUfQxhdWafgknMMhWHl5Zjar2KFsC3vpPaOg0qDS5YEc9DqyBPE4U4y2PmaoXPdh3lmkwuMwu5pYme68EbGB1MQhoK3UXL9b94nY5GhTubx3dvL0mbwE1hHG/8d6UsaB9OdyZLVFiwSquAERBLnjSWHqcyxlo7+pBq6M7FUi274RI8x3jchInl72Kto=
+branches:
+  only:
+  - master
+notifications:
+  webhooks: https://travis-devil.herokuapp.com/notify
