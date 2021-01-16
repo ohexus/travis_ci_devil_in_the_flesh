@@ -2,6 +2,8 @@
 
 Bot can notify you about build and deploy status.
 
+Working bot [here](https://telegram.me/travis_ci_devil_in_the_flesh_bot).
+
 ## Installation
 
 In the project directory, run:
