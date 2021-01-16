@@ -5,8 +5,7 @@ import GithubRepo from './GithubRepo';
 
 export interface Repo {
   owner: UserDoc['id'];
-
-  name: string;
+  title: string;
   repo: GithubRepo;
 }
 

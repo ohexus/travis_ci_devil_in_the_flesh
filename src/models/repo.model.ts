@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import GithubRepo from '../interfaces/entities/GithubRepo';
 
 import { Repo, RepoDoc } from '../interfaces/entities/Repo';
 import { UserDoc } from '../interfaces/entities/User';
@@ -6,8 +7,8 @@ import { UserDoc } from '../interfaces/entities/User';
 const repoSchema: Schema = new Schema(
   {
     owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    name: { type: String, unique: true, required: true },
-    repo: { type: Schema.Types.Mixed, unique: true, required: true },
+    title: { type: String, required: true },
+    repo: { type: Schema.Types.Mixed, required: true },
   },
   { timestamps: true },
 );
@@ -15,11 +16,11 @@ const repoSchema: Schema = new Schema(
 const RepoModel = model<RepoDoc>('Repo', repoSchema);
 
 export default class RepoClass extends RepoModel {
-  static async addRepo({ owner, name, repo }: Repo): Promise<RepoDoc> {
+  static async addRepo({ owner, title, repo }: Repo): Promise<RepoDoc> {
     try {
       const createdDoc: RepoDoc = await this.create({
         owner,
-        name,
+        title,
         repo,
       });
 
@@ -49,7 +50,7 @@ export default class RepoClass extends RepoModel {
     }
   }
 
-  static async getRepoById(id: RepoDoc['repo']['id']): Promise<RepoDoc> {
+  static async getRepoById(id: GithubRepo['id']): Promise<RepoDoc> {
     try {
       const foundDoc: RepoDoc = await this.findOne({ 'repo.id': id });
 
@@ -59,9 +60,21 @@ export default class RepoClass extends RepoModel {
     }
   }
 
-  static async getRepoByName(name: RepoDoc['name'], owner: UserDoc['id']): Promise<RepoDoc | null> {
+  static async getRepoByTitle(title: RepoDoc['title'], owner: UserDoc['id']): Promise<RepoDoc | null> {
     try {
-      const foundDoc: RepoDoc | null = await this.findOne({ $and: [{ owner }, { name }] });
+      const foundDoc: RepoDoc | null = await this.findOne({ $and: [{ owner }, { title }] });
+
+      return foundDoc;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  static async getRepo(owner: GithubRepo['owner_name'], name: GithubRepo['name']): Promise<RepoDoc | null> {
+    try {
+      const foundDoc: RepoDoc | null = await this.findOne({
+        $and: [{ 'repo.owner_name': owner }, { 'repo.name': name }],
+      });
 
       return foundDoc;
     } catch (error) {

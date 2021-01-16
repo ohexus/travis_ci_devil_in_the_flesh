@@ -3,6 +3,7 @@ import { UserService } from '.';
 
 import { Repo, RepoDoc } from '../interfaces/entities/Repo';
 import { User, UserDoc } from '../interfaces/entities/User';
+import GithubRepo from '../interfaces/entities/GithubRepo';
 
 class RepoService {
   async addRepo(repo: Repo): Promise<RepoDoc> {
@@ -17,12 +18,16 @@ class RepoService {
     return await RepoClass.getRepoByDocId(id);
   }
 
-  async getRepoById(id: RepoDoc['id']): Promise<RepoDoc> {
+  async getRepoById(id: GithubRepo['id']): Promise<RepoDoc> {
     return await RepoClass.getRepoById(id);
   }
 
-  async getRepoByName(name: RepoDoc['name'], owner: UserDoc['id']): Promise<RepoDoc | null> {
-    return await RepoClass.getRepoByName(name, owner);
+  async getRepoByTitle(title: RepoDoc['title'], owner: UserDoc['id']): Promise<RepoDoc | null> {
+    return await RepoClass.getRepoByTitle(owner, title);
+  }
+
+  async getRepo(owner: GithubRepo['owner_name'], name: GithubRepo['name']): Promise<RepoDoc | null> {
+    return await RepoClass.getRepo(owner, name);
   }
 
   async getAllReposByUser(telegramId: User['telegramId']): Promise<RepoDoc[]> {
@@ -41,7 +46,7 @@ class RepoService {
     return listArray
       .map(
         (repoDoc, index) =>
-          `${repoDoc.name}${withLinks ? `: ${repoDoc.repo.html_url}` : index === listArray.length - 1 ? '' : ','}`,
+          `${repoDoc.repo.name}${withLinks ? `: ${repoDoc.repo.html_url}` : index === listArray.length - 1 ? '' : ','}`,
       )
       .reduce((acc: string, curr: string) => acc + curr + '\n', '');
   }

@@ -24,9 +24,9 @@ class NotificationsController {
         throw new Error(LOGS.ERROR.TRAVIS.WRONG_PAYLOAD);
       }
 
-      const repo = await RepoService.getRepoById(payload.repository.id);
+      const { repository } = payload;
 
-      console.log(repo);
+      const repo = await RepoService.getRepo(repository.owner_name, repository.name);
 
       if (!!repo) {
         const user = await UserService.getUserById(repo.owner);

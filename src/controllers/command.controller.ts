@@ -14,6 +14,7 @@ import {
 } from '../markups/repos';
 
 import splitString from '../utils/helpers/splitString';
+import getRepo from '../utils/http/requests/getRepo';
 import logger from '../utils/logger';
 
 import { RepoService, UserService } from '../services';
@@ -21,8 +22,6 @@ import { RepoService, UserService } from '../services';
 import Steps from '../enums/Steps';
 
 import BotContext from '../interfaces/BotContext';
-import getRepo from '../utils/http/requests/getRepo';
-import GithubRepo from '../interfaces/entities/GithubRepo';
 
 class CommandController {
   constructor() {}
@@ -89,7 +88,7 @@ class CommandController {
         }
 
         if (!!user && !!ctx.session) {
-          const repoDoc = await RepoService.addRepo({ owner: user.id, name: title, repo: githubRepo });
+          const repoDoc = await RepoService.addRepo({ owner: user.id, title, repo: githubRepo });
           await UserService.addRepo(user.id, repoDoc.id);
 
           ctx.session.step = null;
@@ -143,13 +142,13 @@ class CommandController {
   async onDeleteReply(ctx: BotContext) {
     try {
       if (!!ctx.message && !!ctx.message.text) {
-        const [name] = splitString(ctx.message.text);
+        const [title] = splitString(ctx.message.text);
 
-        if (!!name && !!name.length) {
+        if (!!title && !!title.length) {
           const user = await UserService.getUserByTelegramId(ctx.message.from.id);
 
           if (!!user && !!ctx.session) {
-            const repo = await RepoService.getRepoByName(name, user.id);
+            const repo = await RepoService.getRepoByTitle(title, user.id);
 
             if (!!repo) {
               await RepoService.deleteRepo(repo.id);
