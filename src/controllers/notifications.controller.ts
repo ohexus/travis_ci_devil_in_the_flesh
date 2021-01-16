@@ -4,6 +4,8 @@ import bot from '../bot';
 
 import { LOGS } from '../constants';
 
+import errorHandler from '../utils/http/errorHandler';
+import successResponse from '../utils/http/successResponse';
 import logger from '../utils/logger';
 
 import { RepoService, UserService } from '../services';
@@ -15,11 +17,9 @@ import TravisPayload from '../interfaces/TravisPayload';
 class NotificationsController {
   constructor() {}
 
-  // TODO
-  async postNotify(req: Request, res: Response): Promise<void> {
+  async postNotify(req: Request, res: Response): Promise<Response> {
     try {
       const payload: TravisPayload = JSON.parse(req.body.payload);
-
       if (!payload || !payload.repository) {
         throw new Error(LOGS.ERROR.TRAVIS.WRONG_PAYLOAD);
       }
@@ -27,16 +27,23 @@ class NotificationsController {
       const { repository } = payload;
 
       const repo = await RepoService.getRepo(repository.owner_name, repository.name);
+      if (!repo) {
+        throw new Error(LOGS.ERROR.REPO.NOT_FOUND);
+      }
 
-      if (!!repo) {
-        const user = await UserService.getUserById(repo.owner);
+      const user = await UserService.getUserById(repo.owner);
 
-        const buildHTML = buildStatusHTML(payload);
+      try {
+        await bot.telegram.sendMessage(user.chatId, buildStatusHTML(payload), { parse_mode: 'HTML' });
 
-        bot.telegram.sendMessage(user.chatId, buildHTML, { parse_mode: 'HTML' });
+        return successResponse(res, LOGS.SUCCESS.NOTIFICATION.SEND);
+      } catch (err) {
+        throw new Error(LOGS.ERROR.NOTIFICATION.SEND);
       }
     } catch (err) {
       logger.error(err);
+
+      return errorHandler(res, err);
     }
   }
 }
