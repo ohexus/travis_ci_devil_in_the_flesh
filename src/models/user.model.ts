@@ -6,7 +6,7 @@ import { RepoDoc } from '../interfaces/entities/Repo';
 const userSchema: Schema = new Schema(
   {
     telegramId: { type: Number, unique: true, required: true },
-    chatId: { type: Number, unique: true, required: true },
+    chatId: { type: Number, required: true },
     repos: { type: [Schema.Types.ObjectId], ref: 'Repo', default: [] },
   },
   { timestamps: true },
