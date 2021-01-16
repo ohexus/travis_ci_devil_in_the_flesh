@@ -11,6 +11,9 @@ const LOGS = {
       GET_ONE: 'User got successfully',
       DELETE: 'User deleted successfully',
     },
+    NOTIFICATION: {
+      SEND: 'Notification send successfully',
+    },
   },
   ERROR: {
     HTTP: {
@@ -30,6 +33,9 @@ const LOGS = {
     },
     TRAVIS: {
       WRONG_PAYLOAD: 'Wrong payload!',
+    },
+    NOTIFICATION: {
+      SEND: 'Failed to send notification',
     },
   },
 };
