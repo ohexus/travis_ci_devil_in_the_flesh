@@ -1,8 +1,12 @@
 import { LOGS } from '../constants';
 
-import { helpMarkdown, startMarkdown, unsupportedCommandMarkdown } from '../markups/commandResponses';
-import { deleteErrorMarkdown, deleteNothingMarkdown, deleteSuccessMarkdown } from '../markups/commandResponses/delete';
 import {
+  cancelNothingMarkdown,
+  cancelSuccessMarkdown,
+  deleteErrorMarkdown,
+  deleteNothingMarkdown,
+  deleteSuccessMarkdown,
+  helpMarkdown,
   noReposMarkdown,
   ownerRequiredMarkdown,
   repoErrorMarkdown,
@@ -10,8 +14,10 @@ import {
   repoNotExistsMarkdown,
   repoRequiredMarkdown,
   repoSavedMarkdown,
+  startMarkdown,
   titleRequiredMarkdown,
-} from '../markups/repos';
+  unsupportedCommandMarkdown,
+} from '../markups/commandResponses';
 
 import splitString from '../utils/helpers/splitString';
 import getRepo from '../utils/http/requests/getRepo';
@@ -22,6 +28,7 @@ import { RepoService, UserService } from '../services';
 import Steps from '../enums/Steps';
 
 import BotContext from '../interfaces/BotContext';
+import listHTML from '../markups/commandResponses/listHTML';
 
 class CommandController {
   constructor() {}
@@ -106,10 +113,10 @@ class CommandController {
   async onList(ctx: BotContext) {
     try {
       if (!!ctx.message) {
-        const list = await RepoService.getList(ctx.message.from.id, true);
+        const repoDocs = await RepoService.getAllReposByUser(ctx.message.from.id);
 
-        if (!!list.length) {
-          ctx.reply(`Your repositories:\n${list}`, { disable_web_page_preview: true });
+        if (!!repoDocs.length) {
+          ctx.replyWithHTML(listHTML(repoDocs, true, 'Your repositories'), { disable_web_page_preview: true });
         } else {
           ctx.replyWithMarkdownV2(noReposMarkdown);
         }
@@ -124,12 +131,20 @@ class CommandController {
       if (!!ctx.message) {
         ctx.session = { step: Steps.DELETE };
 
-        const list = await RepoService.getList(ctx.message.from.id, false);
+        const repoDocs = await RepoService.getAllReposByUser(ctx.message.from.id);
 
-        if (!!list.length) {
-          ctx.reply(`Please type one of your repositories provided below:\n${list}`, {
-            disable_web_page_preview: true,
-          });
+        if (!!repoDocs.length) {
+          ctx.replyWithHTML(
+            listHTML(
+              repoDocs,
+              false,
+              'Please type one of your repositories provided below',
+              'You can cancel this command by typing /cancel.',
+            ),
+            {
+              disable_web_page_preview: true,
+            },
+          );
         } else {
           ctx.replyWithMarkdownV2(deleteNothingMarkdown);
         }
@@ -184,11 +199,13 @@ class CommandController {
 
   async onCancel(ctx: BotContext) {
     try {
-      if (!!ctx.session) {
+      if (!!ctx.session && !!ctx.session.step) {
         ctx.session.step = null;
-      }
 
-      ctx.replyWithMarkdownV2(helpMarkdown);
+        ctx.replyWithMarkdownV2(cancelSuccessMarkdown);
+      } else {
+        ctx.replyWithMarkdownV2(cancelNothingMarkdown);
+      }
     } catch (err) {
       logger.error(err);
     }
