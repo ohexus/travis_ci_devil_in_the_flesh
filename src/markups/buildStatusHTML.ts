@@ -1,5 +1,6 @@
 import { BuildStatuses } from '../enums/BuildStatuses';
 import TravisPayload from '../interfaces/TravisPayload';
+import formatTime from '../utils/helpers/formatTime';
 
 export default function buildStatusHTML(payload: TravisPayload): string {
   return `
@@ -7,6 +8,8 @@ export default function buildStatusHTML(payload: TravisPayload): string {
     payload.number
   }</a> (<a href='${payload.compare_url}'>${payload.commit.slice(0, 7)}</a>) of ${payload.repository.owner_name}/${
     payload.repository.name
-  } on branch ${payload.branch} by ${payload.author_name} ${payload.status_message} in a ${payload.duration} sec.
+  } on branch ${payload.branch} by ${
+    payload.author_name
+  } <i>${payload.status_message.toLowerCase()}</i> in a ${formatTime(payload.duration, 'abbreviation')}.
   `;
 }
