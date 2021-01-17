@@ -6,3 +6,5 @@ You can control me by sending these commands:
 /list \- List all current repositories
 /delete \- Delete repository and stop receiving notifications from it
 /cancel \- Cancel current command
+
+If you find bugs or have some propositions, please contact the author @ohexuse\.
