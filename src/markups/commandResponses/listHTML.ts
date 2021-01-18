@@ -9,7 +9,9 @@ export default function listHTML(
   return `${heading}:\n\n${repos
     .map(
       (repoDoc, index) =>
-        `${repoDoc.repo.name}${withLinks ? `: ${repoDoc.repo.html_url}` : ''}${index === repos.length - 1 ? '.' : ';'}`,
+        `${index + 1}. ${repoDoc.repo.name}${withLinks ? `:\n${repoDoc.repo.html_url}` : ''}${
+          index === repos.length - 1 ? '.' : ';'
+        }`,
     )
     .reduce((acc: string, curr: string) => acc + curr + '\n\n', '')}${afterword || ''}`;
 }
