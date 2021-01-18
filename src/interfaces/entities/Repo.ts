@@ -1,10 +1,10 @@
 import { Document } from 'mongoose';
 
-import { UserDoc } from './User';
+import { ChatDoc } from './Chat';
 import GithubRepo from './GithubRepo';
 
 export interface Repo {
-  owner: UserDoc['id'];
+  owner: ChatDoc['id'];
   title: string;
   repo: GithubRepo;
 }

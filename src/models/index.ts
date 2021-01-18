@@ -1,4 +1,4 @@
 import RepoClass from './repo.model';
-import UserClass from './user.model';
+import ChatClass from './chat.model';
 
-export { RepoClass, UserClass };
+export { RepoClass, ChatClass };

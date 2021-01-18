@@ -23,7 +23,7 @@ import splitString from '../utils/helpers/splitString';
 import getRepo from '../utils/http/requests/getRepo';
 import logger from '../utils/logger';
 
-import { RepoService, UserService } from '../services';
+import { RepoService, ChatService } from '../services';
 
 import Steps from '../enums/Steps';
 
@@ -36,12 +36,11 @@ class CommandController {
   async onStart(ctx: BotContext) {
     try {
       if (!!ctx.message) {
-        const telegramId = ctx.message.from.id;
-        const chatId = ctx.message.chat.id;
+        const telegramId = ctx.message.chat.id;
 
-        const user = await UserService.getUserByTelegramId(telegramId);
-        if (!user) {
-          await UserService.addUser({ telegramId, chatId });
+        const chat = await ChatService.getChatByTelegramId(telegramId);
+        if (!chat) {
+          await ChatService.addChat({ telegramId });
         }
       }
 
@@ -86,7 +85,7 @@ class CommandController {
           return ctx.replyWithMarkdownV2(repoRequiredMarkdown);
         }
 
-        const user = await UserService.getUserByTelegramId(ctx.message.from.id);
+        const chat = await ChatService.getChatByTelegramId(ctx.message.from.id);
 
         const githubRepo = await getRepo(owner, repoName);
 
@@ -94,9 +93,9 @@ class CommandController {
           return ctx.replyWithMarkdownV2(repoNotExistsMarkdown);
         }
 
-        if (!!user && !!ctx.session) {
-          const repoDoc = await RepoService.addRepo({ owner: user.id, title, repo: githubRepo });
-          await UserService.addRepo(user.id, repoDoc.id);
+        if (!!chat && !!ctx.session) {
+          const repoDoc = await RepoService.addRepo({ owner: chat.id, title, repo: githubRepo });
+          await ChatService.addRepo(chat.id, repoDoc.id);
 
           ctx.session.step = null;
 
@@ -113,7 +112,7 @@ class CommandController {
   async onList(ctx: BotContext) {
     try {
       if (!!ctx.message) {
-        const repoDocs = await RepoService.getAllReposByUser(ctx.message.from.id);
+        const repoDocs = await RepoService.getAllReposByChat(ctx.message.from.id);
 
         if (!!repoDocs.length) {
           ctx.replyWithHTML(listHTML(repoDocs, true, 'Your repositories'), { disable_web_page_preview: true });
@@ -131,7 +130,7 @@ class CommandController {
       if (!!ctx.message) {
         ctx.session = { step: Steps.DELETE };
 
-        const repoDocs = await RepoService.getAllReposByUser(ctx.message.from.id);
+        const repoDocs = await RepoService.getAllReposByChat(ctx.message.from.id);
 
         if (!!repoDocs.length) {
           ctx.replyWithHTML(
@@ -160,14 +159,14 @@ class CommandController {
         const [title] = splitString(ctx.message.text);
 
         if (!!title && !!title.length) {
-          const user = await UserService.getUserByTelegramId(ctx.message.from.id);
+          const chat = await ChatService.getChatByTelegramId(ctx.message.from.id);
 
-          if (!!user && !!ctx.session) {
-            const repo = await RepoService.getRepoByTitle(title, user.id);
+          if (!!chat && !!ctx.session) {
+            const repo = await RepoService.getRepoByTitle(title, chat.id);
 
             if (!!repo) {
               await RepoService.deleteRepo(repo.id);
-              await UserService.deleteRepo(user.id, repo.id);
+              await ChatService.deleteRepo(chat.id, repo.id);
 
               ctx.session.step = null;
 

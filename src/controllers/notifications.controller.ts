@@ -8,7 +8,7 @@ import errorHandler from '../utils/http/errorHandler';
 import successResponse from '../utils/http/successResponse';
 import logger from '../utils/logger';
 
-import { RepoService, UserService } from '../services';
+import { RepoService, ChatService } from '../services';
 
 import buildStatusHTML from '../markups/buildStatusHTML';
 
@@ -31,10 +31,10 @@ class NotificationsController {
         throw new Error(LOGS.ERROR.REPO.NOT_FOUND);
       }
 
-      const user = await UserService.getUserById(repo.owner);
+      const chat = await ChatService.getChatById(repo.owner);
 
       try {
-        await bot.telegram.sendMessage(user.chatId, buildStatusHTML(payload), { parse_mode: 'HTML' });
+        await bot.telegram.sendMessage(chat.telegramId, buildStatusHTML(payload), { parse_mode: 'HTML' });
 
         return successResponse(res, LOGS.SUCCESS.NOTIFICATION.SEND);
       } catch (err) {

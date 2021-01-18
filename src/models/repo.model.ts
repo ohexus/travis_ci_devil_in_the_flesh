@@ -2,11 +2,11 @@ import { Schema, model } from 'mongoose';
 import GithubRepo from '../interfaces/entities/GithubRepo';
 
 import { Repo, RepoDoc } from '../interfaces/entities/Repo';
-import { UserDoc } from '../interfaces/entities/User';
+import { ChatDoc } from '../interfaces/entities/Chat';
 
 const repoSchema: Schema = new Schema(
   {
-    owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    owner: { type: Schema.Types.ObjectId, ref: 'Chat', required: true },
     title: { type: String, required: true },
     repo: { type: Schema.Types.Mixed, required: true },
   },
@@ -60,7 +60,7 @@ export default class RepoClass extends RepoModel {
     }
   }
 
-  static async getRepoByTitle(title: RepoDoc['title'], owner: UserDoc['id']): Promise<RepoDoc | null> {
+  static async getRepoByTitle(title: RepoDoc['title'], owner: ChatDoc['id']): Promise<RepoDoc | null> {
     try {
       const foundDoc: RepoDoc | null = await this.findOne({ $and: [{ owner }, { title }] });
 
@@ -82,7 +82,7 @@ export default class RepoClass extends RepoModel {
     }
   }
 
-  static async getAllReposByUser(owner: UserDoc['id']): Promise<RepoDoc[]> {
+  static async getAllReposByChat(owner: ChatDoc['id']): Promise<RepoDoc[]> {
     try {
       const foundDocs: RepoDoc[] = await this.find({ owner });
 

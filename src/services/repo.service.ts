@@ -1,8 +1,8 @@
 import { RepoClass } from '../models';
-import { UserService } from '.';
+import { ChatService } from '.';
 
 import { Repo, RepoDoc } from '../interfaces/entities/Repo';
-import { User, UserDoc } from '../interfaces/entities/User';
+import { Chat, ChatDoc } from '../interfaces/entities/Chat';
 import GithubRepo from '../interfaces/entities/GithubRepo';
 
 class RepoService {
@@ -22,7 +22,7 @@ class RepoService {
     return await RepoClass.getRepoById(id);
   }
 
-  async getRepoByTitle(title: RepoDoc['title'], owner: UserDoc['id']): Promise<RepoDoc | null> {
+  async getRepoByTitle(title: RepoDoc['title'], owner: ChatDoc['id']): Promise<RepoDoc | null> {
     return await RepoClass.getRepoByTitle(owner, title);
   }
 
@@ -30,11 +30,11 @@ class RepoService {
     return await RepoClass.getRepo(owner, name);
   }
 
-  async getAllReposByUser(telegramId: User['telegramId']): Promise<RepoDoc[]> {
-    const user = await UserService.getUserByTelegramId(telegramId);
+  async getAllReposByChat(telegramId: Chat['telegramId']): Promise<RepoDoc[]> {
+    const chat = await ChatService.getChatByTelegramId(telegramId);
 
-    if (!!user) {
-      return await RepoClass.getAllReposByUser(user.id);
+    if (!!chat) {
+      return await RepoClass.getAllReposByChat(chat.id);
     }
 
     return [];

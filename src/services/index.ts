@@ -1,4 +1,4 @@
 import RepoService from './repo.service';
-import UserService from './user.service';
+import ChatService from './chat.service';
 
-export { RepoService, UserService };
+export { RepoService, ChatService };
