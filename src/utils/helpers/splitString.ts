@@ -1,5 +1,5 @@
-import { multipleSpaces } from '../../regexps';
+import { multipleSpacesRegex } from '../../regexes';
 
 export default function splitString(str: string): string[] {
-  return str.trim().replace(multipleSpaces, ' ').split(' ');
+  return str.trim().replace(multipleSpacesRegex, ' ').split(' ');
 }

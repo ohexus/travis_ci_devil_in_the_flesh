@@ -7,7 +7,7 @@ import responseTimeMiddleware from './middlewares/responseTime.middleware';
 import commandRouter from './routes/bot/command.routes';
 import messageRouter from './routes/bot/message.routes';
 
-import { commandRegexp } from './regexps';
+import { commandRegex } from './regexes';
 
 import BotContext from './interfaces/BotContext';
 
@@ -24,7 +24,7 @@ bot.use(logMessageMiddleware);
 bot.use(responseTimeMiddleware);
 
 // Hear command
-bot.hears(commandRegexp, commandRouter);
+bot.hears(commandRegex, commandRouter);
 
 // Hear message
 bot.on('text', messageRouter);
