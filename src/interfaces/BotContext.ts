@@ -7,6 +7,6 @@ export interface SessionData {
 }
 
 export default interface BotContext extends Context {
-  session?: SessionData;
+  session: SessionData;
   message: { text?: string } & Context['message'];
 }

@@ -1,5 +1,5 @@
-import BotContext from '../interfaces/BotContext';
-import NextFunction from '../interfaces/NextFunction';
+import BotContext from '../../interfaces/BotContext';
+import NextFunction from '../../interfaces/NextFunction';
 
 export default async function logMessageMiddleware(ctx: BotContext, next: NextFunction) {
   if (!!ctx.message.text) {

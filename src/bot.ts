@@ -1,11 +1,9 @@
 import config from 'config';
 import { session, Telegraf } from 'telegraf';
 
-import logMessageMiddleware from './middlewares/logMessage.middleware';
-import responseTimeMiddleware from './middlewares/responseTime.middleware';
+import { initSessionMiddleware, logMessageMiddleware, responseTimeMiddleware } from './middlewares/bot';
 
-import commandRouter from './routes/bot/command.routes';
-import messageRouter from './routes/bot/message.routes';
+import { commandRouter, messageRouter } from './routes/bot/';
 
 import { commandRegex } from './regexes';
 
@@ -16,6 +14,7 @@ const bot = new Telegraf<BotContext>(process.env.TELEGRAM_BOT_TOKEN || config.ge
 
 // Use session
 bot.use(session());
+bot.use(initSessionMiddleware);
 
 // Log message
 bot.use(logMessageMiddleware);
