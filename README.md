@@ -1,6 +1,6 @@
-# Telegram bot for Travis CI.
+# Telegram bot for Travis CI
 
-Bot can notify you about build and deploy status and only works from 9:00 am to 2:00 am.
+Bot can notify you about build and deploy status and only works from 9:00 am to 2:00 am \(GMT+2\).
 
 You can find bot [here](https://telegram.me/travis_ci_devil_in_the_flesh_bot).
 
@@ -44,29 +44,29 @@ App requires next config:
 }
 ```
 
-PORT - app port
+- PORT - app port
 
-NODE_ENV - PRODUCTION | DEVELOPMENT | YOUR_ENV
+- NODE_ENV - PRODUCTION | DEVELOPMENT | YOUR_ENV
 
-TELEGRAM_BOT_TOKEN - token for telegram bot
+- TELEGRAM_BOT_TOKEN - token for telegram bot
 
-MONGO_URI - url to your MongoDB
+- MONGO_URI - url to your MongoDB
 
-LOGGER_LVL - ALL < TRACE < DEBUG < INFO < WARN < ERROR < FATAL < MARK < OFF // INFO by default
+- LOGGER_LVL - ALL < TRACE < DEBUG < INFO < WARN < ERROR < FATAL < MARK < OFF // INFO by default
 
 ## Bot commands
 
-/start - Start bot
+- /start - Start bot
 
-/help - List all commands
+- /help - List all commands
 
-/link - Add new repository to receive notifications from Travis CI
+- /link - Add new repository to receive notifications from Travis CI
 
-/list - List all current repositories
+- /list - List all current repositories
 
-/delete - Delete repository and stop receiving notifications from it
+- /delete - Delete repository and stop receiving notifications from it
 
-/cancel - Cancel current command
+- /cancel - Cancel current command
 
 ## Requests
 
