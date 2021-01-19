@@ -22,7 +22,7 @@ class RepoService {
     return await RepoClass.getRepoById(id);
   }
 
-  async getRepoByTitle(title: RepoDoc['title'], owner: ChatDoc['id']): Promise<RepoDoc | null> {
+  async getRepoByTitle(owner: ChatDoc['id'], title: RepoDoc['title']): Promise<RepoDoc | null> {
     return await RepoClass.getRepoByTitle(owner, title);
   }
 

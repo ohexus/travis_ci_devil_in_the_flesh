@@ -60,7 +60,7 @@ export default class RepoClass extends RepoModel {
     }
   }
 
-  static async getRepoByTitle(title: RepoDoc['title'], owner: ChatDoc['id']): Promise<RepoDoc | null> {
+  static async getRepoByTitle(owner: ChatDoc['id'], title: RepoDoc['title']): Promise<RepoDoc | null> {
     try {
       const foundDoc: RepoDoc | null = await this.findOne({ $and: [{ owner }, { title }] });
 
