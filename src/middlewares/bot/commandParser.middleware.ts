@@ -9,7 +9,7 @@ import NextFunction from '../../interfaces/NextFunction';
 
 export default async function commandParserMiddleware(ctx: BotContext, next: NextFunction): Promise<void> {
   if (!ctx.message.text) {
-    await CommandController.onUnsupported(ctx);
+    await CommandController.onStart(ctx);
     return;
   }
 
