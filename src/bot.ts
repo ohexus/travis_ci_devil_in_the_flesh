@@ -1,7 +1,12 @@
 import config from 'config';
 import { session, Telegraf } from 'telegraf';
 
-import { initSessionMiddleware, logMessageMiddleware, responseTimeMiddleware } from './middlewares/bot';
+import {
+  commandParserMiddleware,
+  initSessionMiddleware,
+  logMessageMiddleware,
+  responseTimeMiddleware,
+} from './middlewares/bot';
 
 import { commandRouter, messageRouter } from './routes/bot/';
 
@@ -21,6 +26,9 @@ bot.use(logMessageMiddleware);
 
 // Log response time
 bot.use(responseTimeMiddleware);
+
+// Parse command
+bot.use(commandParserMiddleware);
 
 // Hear command
 bot.hears(commandRegex, commandRouter);
