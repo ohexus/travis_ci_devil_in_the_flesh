@@ -6,10 +6,10 @@ const LOGS = {
     DB: {
       CONNECTION: 'DB connection established successfully',
     },
-    USER: {
-      ADD: 'User added successfully',
-      GET_ONE: 'User got successfully',
-      DELETE: 'User deleted successfully',
+    CHAT: {
+      ADD: 'Chat added successfully',
+      GET_ONE: 'Chat got successfully',
+      DELETE: 'Chat deleted successfully',
     },
     NOTIFICATION: {
       SEND: 'Notification send successfully',
@@ -23,10 +23,10 @@ const LOGS = {
     DB: {
       CONNECTION: 'Failed DB connection!',
     },
-    USER: {
-      ADD: 'Failed to add user',
-      NOT_FOUND: 'User not found!',
-      DELETE: 'Failed to delete user',
+    CHAT: {
+      ADD: 'Failed to add chat',
+      NOT_FOUND: 'Chat not found!',
+      DELETE: 'Failed to delete chat',
     },
     REPO: {
       NOT_FOUND: 'Repo not found!',
