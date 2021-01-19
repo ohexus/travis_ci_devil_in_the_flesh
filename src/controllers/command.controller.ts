@@ -7,6 +7,7 @@ import {
   deleteNothingMarkdown,
   deleteSuccessMarkdown,
   helpMarkdown,
+  listHTML,
   noReposMarkdown,
   ownerRequiredMarkdown,
   repoErrorMarkdown,
@@ -28,20 +29,17 @@ import { RepoService, ChatService } from '../services';
 import Steps from '../enums/Steps';
 
 import BotContext from '../interfaces/BotContext';
-import listHTML from '../markups/commandResponses/listHTML';
 
 class CommandController {
   constructor() {}
 
   async onStart(ctx: BotContext) {
     try {
-      if (!!ctx.message) {
-        const telegramId = ctx.message.chat.id;
+      const telegramId = ctx.message.chat.id;
 
-        const chat = await ChatService.getChatByTelegramId(telegramId);
-        if (!chat) {
-          await ChatService.addChat({ telegramId });
-        }
+      const chat = await ChatService.getChatByTelegramId(telegramId);
+      if (!chat) {
+        await ChatService.addChat({ telegramId });
       }
 
       ctx.replyWithMarkdownV2(startMarkdown);
@@ -60,7 +58,7 @@ class CommandController {
 
   async onLink(ctx: BotContext) {
     try {
-      ctx.session = { step: Steps.LINK };
+      ctx.session.step = Steps.LINK;
 
       ctx.replyWithMarkdownV2(repoFormatMarkdown);
     } catch (err) {
@@ -70,7 +68,7 @@ class CommandController {
 
   async onLinkReply(ctx: BotContext) {
     try {
-      if (!!ctx.message && !!ctx.message.text) {
+      if (!!ctx.message.text) {
         const [title, owner, repoName] = splitString(ctx.message.text);
 
         if (!title || !title.length) {
@@ -85,7 +83,7 @@ class CommandController {
           return ctx.replyWithMarkdownV2(repoRequiredMarkdown);
         }
 
-        const chat = await ChatService.getChatByTelegramId(ctx.message.from.id);
+        const chat = await ChatService.getChatByTelegramId(ctx.message.chat.id);
 
         const githubRepo = await getRepo(owner, repoName);
 
@@ -111,14 +109,12 @@ class CommandController {
 
   async onList(ctx: BotContext) {
     try {
-      if (!!ctx.message) {
-        const repoDocs = await RepoService.getAllReposByChat(ctx.message.from.id);
+      const repoDocs = await RepoService.getAllReposByChat(ctx.message.chat.id);
 
-        if (!!repoDocs.length) {
-          ctx.replyWithHTML(listHTML(repoDocs, true, 'Your repositories'), { disable_web_page_preview: true });
-        } else {
-          ctx.replyWithMarkdownV2(noReposMarkdown);
-        }
+      if (!!repoDocs.length) {
+        ctx.replyWithHTML(listHTML(repoDocs, true, 'Your repositories'), { disable_web_page_preview: true });
+      } else {
+        ctx.replyWithMarkdownV2(noReposMarkdown);
       }
     } catch (err) {
       logger.error(err);
@@ -127,26 +123,24 @@ class CommandController {
 
   async onDelete(ctx: BotContext) {
     try {
-      if (!!ctx.message) {
-        ctx.session = { step: Steps.DELETE };
+      ctx.session.step = Steps.DELETE;
 
-        const repoDocs = await RepoService.getAllReposByChat(ctx.message.from.id);
+      const repoDocs = await RepoService.getAllReposByChat(ctx.message.chat.id);
 
-        if (!!repoDocs.length) {
-          ctx.replyWithHTML(
-            listHTML(
-              repoDocs,
-              false,
-              'Please type one of your repositories provided below',
-              'You can cancel this command by typing /cancel.',
-            ),
-            {
-              disable_web_page_preview: true,
-            },
-          );
-        } else {
-          ctx.replyWithMarkdownV2(deleteNothingMarkdown);
-        }
+      if (!!repoDocs.length) {
+        ctx.replyWithHTML(
+          listHTML(
+            repoDocs,
+            false,
+            'Please type one of your repositories provided below',
+            'You can cancel this command by typing /cancel.',
+          ),
+          {
+            disable_web_page_preview: true,
+          },
+        );
+      } else {
+        ctx.replyWithMarkdownV2(deleteNothingMarkdown);
       }
     } catch (err) {
       logger.error(err);
@@ -155,14 +149,14 @@ class CommandController {
 
   async onDeleteReply(ctx: BotContext) {
     try {
-      if (!!ctx.message && !!ctx.message.text) {
+      if (!!ctx.message.text) {
         const [title] = splitString(ctx.message.text);
 
         if (!!title && !!title.length) {
-          const chat = await ChatService.getChatByTelegramId(ctx.message.from.id);
+          const chat = await ChatService.getChatByTelegramId(ctx.message.chat.id);
 
           if (!!chat && !!ctx.session) {
-            const repo = await RepoService.getRepoByTitle(title, chat.id);
+            const repo = await RepoService.getRepoByTitle(chat.id, title);
 
             if (!!repo) {
               await RepoService.deleteRepo(repo.id);
@@ -174,16 +168,17 @@ class CommandController {
 
               await this.onList(ctx);
             } else {
-              throw new Error(LOGS.ERROR.REPO.NOT_FOUND);
+              ctx.replyWithMarkdownV2(deleteErrorMarkdown);
             }
           } else {
-            ctx.replyWithMarkdownV2(deleteErrorMarkdown);
+            throw new Error(LOGS.ERROR.CHAT.NOT_FOUND);
           }
         } else {
           ctx.replyWithMarkdownV2(repoRequiredMarkdown);
         }
       }
     } catch (err) {
+      ctx.replyWithMarkdownV2(deleteErrorMarkdown);
       logger.error(err);
     }
   }
@@ -198,7 +193,7 @@ class CommandController {
 
   async onCancel(ctx: BotContext) {
     try {
-      if (!!ctx.session && !!ctx.session.step) {
+      if (!!ctx.session.step) {
         ctx.session.step = null;
 
         ctx.replyWithMarkdownV2(cancelSuccessMarkdown);

@@ -12,6 +12,7 @@ import {
   repoSavedMarkdown,
   titleRequiredMarkdown,
 } from './repos';
+import listHTML from './listHTML';
 
 const helpMarkdown = readFileSync(`${__dirname}/help.md`, 'utf8');
 const startMarkdown = readFileSync(`${__dirname}/start.md`, 'utf8');
@@ -24,6 +25,7 @@ export {
   deleteNothingMarkdown,
   deleteSuccessMarkdown,
   helpMarkdown,
+  listHTML,
   noReposMarkdown,
   ownerRequiredMarkdown,
   repoErrorMarkdown,
