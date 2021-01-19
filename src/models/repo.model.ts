@@ -70,13 +70,13 @@ export default class RepoClass extends RepoModel {
     }
   }
 
-  static async getRepo(owner: GithubRepo['owner_name'], name: GithubRepo['name']): Promise<RepoDoc | null> {
+  static async getRepos(owner: GithubRepo['owner_name'], name: GithubRepo['name']): Promise<RepoDoc[]> {
     try {
-      const foundDoc: RepoDoc | null = await this.findOne({
+      const foundDocs: RepoDoc[] = await this.find({
         $and: [{ 'repo.owner_name': owner }, { 'repo.name': name }],
       });
 
-      return foundDoc;
+      return foundDocs;
     } catch (error) {
       throw new Error(error.message);
     }

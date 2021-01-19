@@ -26,15 +26,17 @@ class NotificationsController {
 
       const { repository } = payload;
 
-      const repo = await RepoService.getRepo(repository.owner_name, repository.name);
-      if (!repo) {
+      const repos = await RepoService.getRepos(repository.owner_name, repository.name);
+      if (!repos.length) {
         throw new Error(LOGS.ERROR.REPO.NOT_FOUND);
       }
 
-      const chat = await ChatService.getChatById(repo.owner);
-
       try {
-        await bot.telegram.sendMessage(chat.telegramId, buildStatusHTML(payload), { parse_mode: 'HTML' });
+        for (let i = 0; i < repos.length; i++) {
+          const chat = await ChatService.getChatById(repos[i].owner);
+
+          await bot.telegram.sendMessage(chat.telegramId, buildStatusHTML(payload), { parse_mode: 'HTML' });
+        }
 
         return successResponse(res, LOGS.SUCCESS.NOTIFICATION.SEND);
       } catch (err) {
