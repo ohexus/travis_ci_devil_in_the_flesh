@@ -1,7 +1,7 @@
 import BotContext from '../../interfaces/BotContext';
 import NextFunction from '../../interfaces/NextFunction';
 
-export default async function responseTimeMiddleware(ctx: BotContext, next: NextFunction) {
+export default async function responseTimeMiddleware(ctx: BotContext, next: NextFunction): Promise<void> {
   const start = new Date().getMilliseconds();
 
   await next();

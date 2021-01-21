@@ -33,7 +33,7 @@ import BotContext from '../interfaces/BotContext';
 class CommandController {
   constructor() {}
 
-  async onStart(ctx: BotContext) {
+  async onStart(ctx: BotContext): Promise<void> {
     try {
       const telegramId = ctx.message.chat.id;
 
@@ -48,7 +48,7 @@ class CommandController {
     }
   }
 
-  async onHelp(ctx: BotContext) {
+  async onHelp(ctx: BotContext): Promise<void> {
     try {
       ctx.replyWithMarkdownV2(helpMarkdown);
     } catch (err) {
@@ -56,7 +56,7 @@ class CommandController {
     }
   }
 
-  async onLink(ctx: BotContext) {
+  async onLink(ctx: BotContext): Promise<void> {
     try {
       ctx.session.step = Steps.LINK;
 
@@ -66,29 +66,32 @@ class CommandController {
     }
   }
 
-  async onLinkReply(ctx: BotContext) {
+  async onLinkReply(ctx: BotContext): Promise<void> {
     try {
       if (!!ctx.message.text) {
         const [title, owner, repoName] = splitString(ctx.message.text);
 
         if (!title || !title.length) {
-          return ctx.replyWithMarkdownV2(titleRequiredMarkdown);
+          ctx.replyWithMarkdownV2(titleRequiredMarkdown);
+          return;
         }
 
         if (!owner || !owner.length) {
-          return ctx.replyWithMarkdownV2(ownerRequiredMarkdown);
+          ctx.replyWithMarkdownV2(ownerRequiredMarkdown);
+          return;
         }
 
         if (!repoName || !repoName.length) {
-          return ctx.replyWithMarkdownV2(repoRequiredMarkdown);
+          ctx.replyWithMarkdownV2(repoRequiredMarkdown);
+          return;
         }
 
         const chat = await ChatService.getChatByTelegramId(ctx.message.chat.id);
 
         const githubRepo = await getRepo(owner, repoName);
-
         if (!githubRepo) {
-          return ctx.replyWithMarkdownV2(repoNotExistsMarkdown);
+          ctx.replyWithMarkdownV2(repoNotExistsMarkdown);
+          return;
         }
 
         if (!!chat && !!ctx.session) {
@@ -107,7 +110,7 @@ class CommandController {
     }
   }
 
-  async onList(ctx: BotContext) {
+  async onList(ctx: BotContext): Promise<void> {
     try {
       const repoDocs = await RepoService.getAllReposByChat(ctx.message.chat.id);
 
@@ -121,7 +124,7 @@ class CommandController {
     }
   }
 
-  async onDelete(ctx: BotContext) {
+  async onDelete(ctx: BotContext): Promise<void> {
     try {
       ctx.session.step = Steps.DELETE;
 
@@ -147,7 +150,7 @@ class CommandController {
     }
   }
 
-  async onDeleteReply(ctx: BotContext) {
+  async onDeleteReply(ctx: BotContext): Promise<void> {
     try {
       if (!!ctx.message.text) {
         const [title] = splitString(ctx.message.text);
@@ -164,7 +167,7 @@ class CommandController {
 
               ctx.session.step = null;
 
-              ctx.replyWithMarkdownV2(deleteSuccessMarkdown);
+              await ctx.replyWithMarkdownV2(deleteSuccessMarkdown);
 
               await this.onList(ctx);
             } else {
@@ -183,7 +186,7 @@ class CommandController {
     }
   }
 
-  async onUnsupported(ctx: BotContext) {
+  async onUnsupported(ctx: BotContext): Promise<void> {
     try {
       ctx.replyWithMarkdownV2(unsupportedCommandMarkdown);
     } catch (err) {
@@ -191,7 +194,7 @@ class CommandController {
     }
   }
 
-  async onCancel(ctx: BotContext) {
+  async onCancel(ctx: BotContext): Promise<void> {
     try {
       if (!!ctx.session.step) {
         ctx.session.step = null;
