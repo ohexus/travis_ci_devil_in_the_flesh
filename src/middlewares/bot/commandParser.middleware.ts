@@ -15,16 +15,12 @@ export default async function commandParserMiddleware(ctx: BotContext, next: Nex
 
   const messageText = (ctx.message.text = ctx.message.text.trim());
 
-  if (ctx.message.chat.type === 'private') {
-    if (!commandRegex.test(messageText)) {
-      next();
-      return;
-    }
-  } else {
-    if (!commandWithBotNameRegex.test(messageText)) {
-      next();
-      return;
-    }
+  const isCommandFormatValid =
+    ctx.message.chat.type === 'private' ? commandRegex.test(messageText) : commandWithBotNameRegex.test(messageText);
+
+  if (!isCommandFormatValid) {
+    next();
+    return;
   }
 
   const command = messageText.slice(1).split(' ')[0].split('@')[0];
@@ -40,7 +36,7 @@ export default async function commandParserMiddleware(ctx: BotContext, next: Nex
     : {
         ...ctx.session,
         command: {
-          ...ctx.session.command,
+          prev: ctx.session.command.curr || ctx.session.command.prev,
           curr: null,
         },
       };
