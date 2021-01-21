@@ -19,7 +19,7 @@ class NotificationsController {
 
   async postNotify(req: Request, res: Response): Promise<Response> {
     try {
-      const payload: TravisPayload = JSON.parse(req.body.payload);
+      const payload: TravisPayload | null = !!req.body.payload ? (JSON.parse(req.body.payload) as TravisPayload) : null;
       if (!payload || !payload.repository) {
         throw new Error(LOGS.ERROR.TRAVIS.WRONG_PAYLOAD);
       }
