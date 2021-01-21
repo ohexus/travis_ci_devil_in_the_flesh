@@ -4,18 +4,18 @@ import Steps from '../../enums/Steps';
 
 import BotContext from '../../interfaces/BotContext';
 
-export default function messageRouter(ctx: BotContext) {
+export default async function messageRouter(ctx: BotContext): Promise<void> {
   switch (ctx.session.step) {
     case Steps.LINK:
-      CommandController.onLinkReply(ctx);
+      await CommandController.onLinkReply(ctx);
       break;
 
     case Steps.DELETE:
-      CommandController.onDeleteReply(ctx);
+      await CommandController.onDeleteReply(ctx);
       break;
 
     default:
-      CommandController.onHelp(ctx);
+      await CommandController.onHelp(ctx);
       break;
   }
 }
