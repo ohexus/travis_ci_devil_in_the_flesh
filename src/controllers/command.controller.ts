@@ -68,42 +68,40 @@ class CommandController {
 
   async onLinkReply(ctx: BotContext): Promise<void> {
     try {
-      if (!!ctx.message.text) {
-        const [title, owner, repoName] = splitString(ctx.message.text);
+      const [title, owner, repoName] = splitString(ctx.message.text);
 
-        if (!title || !title.length) {
-          ctx.replyWithMarkdownV2(titleRequiredMarkdown);
-          return;
-        }
+      if (!title || !title.length) {
+        ctx.replyWithMarkdownV2(titleRequiredMarkdown);
+        return;
+      }
 
-        if (!owner || !owner.length) {
-          ctx.replyWithMarkdownV2(ownerRequiredMarkdown);
-          return;
-        }
+      if (!owner || !owner.length) {
+        ctx.replyWithMarkdownV2(ownerRequiredMarkdown);
+        return;
+      }
 
-        if (!repoName || !repoName.length) {
-          ctx.replyWithMarkdownV2(repoRequiredMarkdown);
-          return;
-        }
+      if (!repoName || !repoName.length) {
+        ctx.replyWithMarkdownV2(repoRequiredMarkdown);
+        return;
+      }
 
-        const chat = await ChatService.getChatByTelegramId(ctx.message.chat.id);
+      const chat = await ChatService.getChatByTelegramId(ctx.message.chat.id);
 
-        const githubRepo = await getRepo(owner, repoName);
-        if (!githubRepo) {
-          ctx.replyWithMarkdownV2(repoNotExistsMarkdown);
-          return;
-        }
+      const githubRepo = await getRepo(owner, repoName);
+      if (!githubRepo) {
+        ctx.replyWithMarkdownV2(repoNotExistsMarkdown);
+        return;
+      }
 
-        if (!!chat && !!ctx.session) {
-          const repoDoc = await RepoService.addRepo({ owner: chat.id, title, repo: githubRepo });
-          await ChatService.addRepo(chat.id, repoDoc.id);
+      if (!!chat && !!ctx.session) {
+        const repoDoc = await RepoService.addRepo({ owner: chat.id, title, repo: githubRepo });
+        await ChatService.addRepo(chat.id, repoDoc.id);
 
-          ctx.session.step = null;
+        ctx.session.step = Steps.SECRET;
 
-          ctx.replyWithMarkdownV2(repoSavedMarkdown);
-        } else {
-          ctx.replyWithMarkdownV2(repoErrorMarkdown);
-        }
+        ctx.replyWithMarkdownV2(repoSavedMarkdown);
+      } else {
+        ctx.replyWithMarkdownV2(repoErrorMarkdown);
       }
     } catch (err) {
       logger.error(err);
@@ -152,33 +150,31 @@ class CommandController {
 
   async onDeleteReply(ctx: BotContext): Promise<void> {
     try {
-      if (!!ctx.message.text) {
-        const [title] = splitString(ctx.message.text);
+      const [title] = splitString(ctx.message.text);
 
-        if (!!title && !!title.length) {
-          const chat = await ChatService.getChatByTelegramId(ctx.message.chat.id);
+      if (!!title && !!title.length) {
+        const chat = await ChatService.getChatByTelegramId(ctx.message.chat.id);
 
-          if (!!chat && !!ctx.session) {
-            const repo = await RepoService.getRepoByTitle(chat.id, title);
+        if (!!chat && !!ctx.session) {
+          const repo = await RepoService.getRepoByTitle(chat.id, title);
 
-            if (!!repo) {
-              await RepoService.deleteRepo(repo.id);
-              await ChatService.deleteRepo(chat.id, repo.id);
+          if (!!repo) {
+            await RepoService.deleteRepo(repo.id);
+            await ChatService.deleteRepo(chat.id, repo.id);
 
-              ctx.session.step = null;
+            ctx.session.step = null;
 
-              await ctx.replyWithMarkdownV2(deleteSuccessMarkdown);
+            await ctx.replyWithMarkdownV2(deleteSuccessMarkdown);
 
-              await this.onList(ctx);
-            } else {
-              ctx.replyWithMarkdownV2(deleteErrorMarkdown);
-            }
+            await this.onList(ctx);
           } else {
-            throw new Error(LOGS.ERROR.CHAT.NOT_FOUND);
+            ctx.replyWithMarkdownV2(deleteErrorMarkdown);
           }
         } else {
-          ctx.replyWithMarkdownV2(repoRequiredMarkdown);
+          throw new Error(LOGS.ERROR.CHAT.NOT_FOUND);
         }
+      } else {
+        ctx.replyWithMarkdownV2(repoRequiredMarkdown);
       }
     } catch (err) {
       ctx.replyWithMarkdownV2(deleteErrorMarkdown);
