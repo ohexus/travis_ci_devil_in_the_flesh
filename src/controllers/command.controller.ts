@@ -21,7 +21,7 @@ import {
 } from '../markups/commandResponses';
 
 import splitString from '../utils/helpers/splitString';
-import getRepo from '../utils/http/requests/getRepo';
+import getRepoFromGithub from '../utils/http/requests/getRepoFromGithub';
 import logger from '../utils/logger';
 
 import { RepoService, ChatService } from '../services';
@@ -87,7 +87,7 @@ class CommandController {
 
       const chat = await ChatService.getChatByTelegramId(ctx.message.chat.id);
 
-      const githubRepo = await getRepo(owner, repoName);
+      const githubRepo = await getRepoFromGithub(owner, repoName);
       if (!githubRepo) {
         ctx.replyWithMarkdownV2(repoNotExistsMarkdown);
         return;
