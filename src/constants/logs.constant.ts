@@ -30,6 +30,8 @@ const LOGS = {
     },
     REPO: {
       NOT_FOUND: 'Repo not found!',
+      NOT_PROVIDED: 'No repo provided!',
+      INVALID_FORMAT: 'Invalid repo format',
     },
     TRAVIS: {
       WRONG_PAYLOAD: 'Wrong payload!',
@@ -38,8 +40,8 @@ const LOGS = {
       SEND: 'Failed to send notification',
     },
     SECRET: {
-      NOT_PROVIDED: 'No secret provided!'
-    }
+      NOT_PROVIDED: 'No secret provided!',
+    },
   },
 };
 
