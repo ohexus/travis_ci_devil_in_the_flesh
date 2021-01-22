@@ -8,7 +8,7 @@ import errorHandler from '../utils/http/errorHandler';
 import successResponse from '../utils/http/successResponse';
 import logger from '../utils/logger';
 
-import { RepoService, ChatService } from '../services';
+import { RepoService, ChatService, SecretService } from '../services';
 
 import buildStatusHTML from '../markups/buildStatusHTML';
 
@@ -19,17 +19,25 @@ class NotificationsController {
 
   async postNotify(req: Request, res: Response): Promise<Response> {
     try {
-      const secret = req.query.secret as string;
-      if (!secret) {
-        throw new Error(LOGS.ERROR.SECRET.NOT_PROVIDED);
-      }
-
       const payload: TravisPayload | null = !!req.body.payload ? (JSON.parse(req.body.payload) as TravisPayload) : null;
       if (!payload || !payload.repository) {
         throw new Error(LOGS.ERROR.TRAVIS.WRONG_PAYLOAD);
       }
 
       const { repository } = payload;
+
+      let secret = req.query.secret as string;
+      if (!secret) {
+        const foundSecret = SecretService.getSecret(repository.owner_name, repository.name);
+
+        if (!foundSecret) {
+          throw new Error(LOGS.ERROR.SECRET.NOT_PROVIDED);
+        }
+
+        secret = foundSecret.value;
+
+        SecretService.deleteSecret(repository.owner_name, repository.name);
+      }
 
       const repos = await RepoService.getRepos(repository.owner_name, repository.name, secret);
       if (!repos.length) {
