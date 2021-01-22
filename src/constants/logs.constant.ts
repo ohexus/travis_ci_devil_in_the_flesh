@@ -37,6 +37,9 @@ const LOGS = {
     NOTIFICATION: {
       SEND: 'Failed to send notification',
     },
+    SECRET: {
+      NOT_PROVIDED: 'No secret provided!'
+    }
   },
 };
 
