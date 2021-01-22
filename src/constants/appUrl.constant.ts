@@ -1,3 +1,11 @@
-export const appUrl = 'https://travis-devil.herokuapp.com';
+const origin = 'https://travis-devil.herokuapp.com';
+const notify = `${origin}/notify`;
+const secret = `${origin}/secret`;
 
-export const appUrlNotify = `${appUrl}/notify?secret=`;
+const appUrl = {
+  origin,
+  notify,
+  secret,
+};
+
+export default appUrl;
