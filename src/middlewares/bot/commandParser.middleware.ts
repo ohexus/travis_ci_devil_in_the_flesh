@@ -2,7 +2,10 @@ import { CommandController } from '../../controllers';
 
 import { commandRegex, commandWithBotNameRegex } from '../../regexes';
 
+import { RepoService } from '../../services';
+
 import Commands from '../../enums/Commands';
+import Steps from '../../enums/Steps';
 
 import BotContext from '../../interfaces/BotContext';
 import NextFunction from '../../interfaces/NextFunction';
@@ -25,9 +28,24 @@ export default async function commandParserMiddleware(ctx: BotContext, next: Nex
 
   const command = messageText.slice(1).split(' ')[0].split('@')[0];
 
-  ctx.session = Object.values(Commands).includes(command as Commands)
+  const isCommandSupported = Object.values(Commands).includes(command as Commands);
+
+  if (
+    isCommandSupported &&
+    command !== Commands.CANCEL &&
+    !!ctx.session.addedRepoId &&
+    ctx.session.step === Steps.SECRET
+  ) {
+    await RepoService.deleteRepo(ctx.session.addedRepoId);
+
+    ctx.session.step = null;
+    ctx.session.addedRepoId = null;
+  }
+
+  ctx.session = isCommandSupported
     ? {
         step: command === Commands.CANCEL ? ctx.session.step : null,
+        addedRepoId: command === Commands.CANCEL ? ctx.session.addedRepoId : null,
         command: {
           prev: ctx.session.command.curr,
           curr: command as Commands,
