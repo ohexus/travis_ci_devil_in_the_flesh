@@ -1,10 +1,18 @@
-import { appUrlNotify } from '../../../constants';
+import { appUrl } from '../../../constants';
 
 export default function secretSavedHTML(secret: string): string {
   return `Secret saved successfully!
-  
-Add the next code to your <i>.travis.yml</i> to start receive notifications:
-  
+
+Add the following code to your <i>.travis.yml</i> to start receive notifications:
+
 <code>notifications:
-  webhooks: ${appUrlNotify}${secret}</code>`;
+  webhooks: ${appUrl.notify}?secret=${secret}</code>
+
+
+Or another way (and also more secure) is to add a variable to travis environment variables and then add the following code:
+
+<code>after_deploy:
+  - curl -X POST ${appUrl.secret} -d "repository=$TRAVIS_REPO_SLUG&secret=$&lt;your_variable_name&gt;"
+notifications:
+  webhooks: ${appUrl.notify}</code>`;
 }
