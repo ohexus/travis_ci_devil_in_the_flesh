@@ -1,5 +1,6 @@
-import isProduction from './isProduction.constants';
-import LOGS from './logs.constants';
-import STATUSES from './statuses.constants';
+import { appUrl, appUrlNotify } from './appUrl.constant';
+import isProduction from './isProduction.constant';
+import LOGS from './logs.constant';
+import STATUSES from './statuses.constant';
 
-export { isProduction, LOGS, STATUSES };
+export { appUrl, appUrlNotify, isProduction, LOGS, STATUSES };
