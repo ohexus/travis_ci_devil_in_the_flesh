@@ -7,6 +7,6 @@ export default function listHTML(
   afterword?: string,
 ): string {
   return `${heading}:\n\n${repos
-    .map((repoDoc, index) => `${index + 1}. ${repoDoc.repo.name}${showLinks ? `:\n${repoDoc.repo.html_url}` : ''};`)
+    .map((repoDoc, index) => `${index + 1}. ${repoDoc.title}${showLinks ? `:\n${repoDoc.repo.html_url}` : ''};`)
     .reduce((acc: string, curr: string) => acc + curr + '\n\n', '')}${afterword || ''}`;
 }
