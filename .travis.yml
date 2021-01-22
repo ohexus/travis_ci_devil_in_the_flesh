@@ -11,5 +11,7 @@ deploy:
 branches:
   only:
     - master
+after_deploy:
+  - curl -X POST https://travis-devil.herokuapp.com/secret -d "repository=$TRAVIS_REPO_SLUG&secret=$TELEGRAM_NOTIFICATION_SECRET"
 notifications:
-  webhooks: https://travis-devil.herokuapp.com/notify?secret=devil-is-not-real
+  webhooks: https://travis-devil.herokuapp.com/notify
