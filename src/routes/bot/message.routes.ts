@@ -14,6 +14,10 @@ export default async function messageRouter(ctx: BotContext): Promise<void> {
       await CommandController.onDeleteReply(ctx);
       break;
 
+    case Steps.SECRET:
+      await CommandController.onSecretReply(ctx);
+      break;
+
     default:
       await CommandController.onHelp(ctx);
       break;

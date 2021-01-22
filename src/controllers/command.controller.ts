@@ -15,6 +15,10 @@ import {
   repoNotExistsMarkdown,
   repoRequiredMarkdown,
   repoSavedMarkdown,
+  secretErrorMarkdown,
+  secretFormatMarkdown,
+  secretRequiredMarkdown,
+  secretSavedHTML,
   startMarkdown,
   titleRequiredMarkdown,
   unsupportedCommandMarkdown,
@@ -29,6 +33,7 @@ import { RepoService, ChatService } from '../services';
 import Steps from '../enums/Steps';
 
 import BotContext from '../interfaces/BotContext';
+import { RepoDoc } from '../interfaces/entities/Repo';
 
 class CommandController {
   constructor() {}
@@ -37,8 +42,8 @@ class CommandController {
     try {
       const telegramId = ctx.message.chat.id;
 
-      const chat = await ChatService.getChatByTelegramId(telegramId);
-      if (!chat) {
+      const chatDoc = await ChatService.getChatByTelegramId(telegramId);
+      if (!chatDoc) {
         await ChatService.addChat({ telegramId });
       }
 
@@ -58,7 +63,7 @@ class CommandController {
 
   async onLink(ctx: BotContext): Promise<void> {
     try {
-      ctx.session.step = Steps.LINK;
+      this.setStep(ctx, Steps.LINK);
 
       ctx.replyWithMarkdownV2(repoFormatMarkdown);
     } catch (err) {
@@ -85,7 +90,7 @@ class CommandController {
         return;
       }
 
-      const chat = await ChatService.getChatByTelegramId(ctx.message.chat.id);
+      const chatDoc = await ChatService.getChatByTelegramId(ctx.message.chat.id);
 
       const githubRepo = await getRepoFromGithub(owner, repoName);
       if (!githubRepo) {
@@ -93,16 +98,43 @@ class CommandController {
         return;
       }
 
-      if (!!chat && !!ctx.session) {
-        const repoDoc = await RepoService.addRepo({ owner: chat.id, title, repo: githubRepo });
-        await ChatService.addRepo(chat.id, repoDoc.id);
-
-        ctx.session.step = Steps.SECRET;
+      if (!!chatDoc) {
+        const repoDoc = await RepoService.addRepo({ owner: chatDoc.id, title, repo: githubRepo });
+        await ChatService.addRepo(chatDoc.id, repoDoc.id);
 
         ctx.replyWithMarkdownV2(repoSavedMarkdown);
+
+        this.setStep(ctx, Steps.SECRET, repoDoc.id);
+
+        ctx.replyWithMarkdownV2(secretFormatMarkdown);
       } else {
         ctx.replyWithMarkdownV2(repoErrorMarkdown);
       }
+    } catch (err) {
+      logger.error(err);
+    }
+  }
+
+  async onSecretReply(ctx: BotContext): Promise<void> {
+    try {
+      const [secret] = splitString(ctx.message.text);
+
+      if (!secret || !secret.length) {
+        ctx.replyWithMarkdownV2(secretRequiredMarkdown);
+        return;
+      }
+
+      const repoDoc = await RepoService.addSecret(ctx.session.addedRepoId, secret);
+
+      if (!!repoDoc) {
+        ctx.replyWithHTML(secretSavedHTML(secret));
+      } else {
+        await RepoService.deleteRepo(ctx.session.addedRepoId);
+
+        ctx.replyWithMarkdownV2(secretErrorMarkdown);
+      }
+
+      this.clearStep(ctx);
     } catch (err) {
       logger.error(err);
     }
@@ -124,7 +156,7 @@ class CommandController {
 
   async onDelete(ctx: BotContext): Promise<void> {
     try {
-      ctx.session.step = Steps.DELETE;
+      this.setStep(ctx, Steps.DELETE);
 
       const repoDocs = await RepoService.getAllReposByChat(ctx.message.chat.id);
 
@@ -153,20 +185,20 @@ class CommandController {
       const [title] = splitString(ctx.message.text);
 
       if (!!title && !!title.length) {
-        const chat = await ChatService.getChatByTelegramId(ctx.message.chat.id);
+        const chatDoc = await ChatService.getChatByTelegramId(ctx.message.chat.id);
 
-        if (!!chat && !!ctx.session) {
-          const repo = await RepoService.getRepoByTitle(chat.id, title);
+        if (!!chatDoc) {
+          const repoDoc = await RepoService.getRepoByTitle(chatDoc.id, title);
 
-          if (!!repo) {
-            await RepoService.deleteRepo(repo.id);
-            await ChatService.deleteRepo(chat.id, repo.id);
-
-            ctx.session.step = null;
+          if (!!repoDoc) {
+            await RepoService.deleteRepo(repoDoc.id);
+            await ChatService.deleteRepo(chatDoc.id, repoDoc.id);
 
             await ctx.replyWithMarkdownV2(deleteSuccessMarkdown);
 
             await this.onList(ctx);
+
+            this.clearStep(ctx);
           } else {
             ctx.replyWithMarkdownV2(deleteErrorMarkdown);
           }
@@ -192,16 +224,29 @@ class CommandController {
 
   async onCancel(ctx: BotContext): Promise<void> {
     try {
-      if (!!ctx.session.step) {
-        ctx.session.step = null;
+      if (!!ctx.session.addedRepoId) {
+        await RepoService.deleteRepo(ctx.session.addedRepoId);
+      }
 
+      if (!!ctx.session.step) {
         ctx.replyWithMarkdownV2(cancelSuccessMarkdown);
       } else {
         ctx.replyWithMarkdownV2(cancelNothingMarkdown);
       }
+
+      this.clearStep(ctx);
     } catch (err) {
       logger.error(err);
     }
+  }
+
+  setStep(ctx: BotContext, step: Steps | null, addedRepoId: RepoDoc['id'] | null = null): void {
+    ctx.session.step = step;
+    ctx.session.addedRepoId = addedRepoId;
+  }
+
+  clearStep(ctx: BotContext): void {
+    this.setStep(ctx, null, null);
   }
 }
 
