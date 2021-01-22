@@ -16,7 +16,7 @@ export default async function connectDB(): Promise<typeof mongoose | null> {
     const connection: typeof mongoose = await mongoose.connect(MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      useFindAndModify: true,
+      useFindAndModify: false,
       useCreateIndex: true,
     });
 
