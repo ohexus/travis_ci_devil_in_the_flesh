@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-import NotificationsController from '../controllers/notifications.controller';
+import { NotificationsController, SecretController } from '../controllers';
 
 const appRouter = Router();
 
@@ -8,5 +8,7 @@ appRouter.get('/', (req: Request, res: Response) => {
 });
 
 appRouter.post('/notify', NotificationsController.postNotify);
+
+appRouter.post('/secret', SecretController.postSecret);
 
 export default appRouter;
