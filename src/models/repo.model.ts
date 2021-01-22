@@ -82,10 +82,14 @@ export default class RepoClass extends RepoModel {
     }
   }
 
-  static async getRepos(owner: GithubRepo['owner_name'], name: GithubRepo['name']): Promise<RepoDoc[]> {
+  static async getRepos(
+    owner: GithubRepo['owner_name'],
+    name: GithubRepo['name'],
+    secret: RepoDoc['secret'],
+  ): Promise<RepoDoc[]> {
     try {
       const foundDocs: RepoDoc[] = await this.find({
-        $and: [{ 'repo.owner_name': owner }, { 'repo.name': name }],
+        $and: [{ 'repo.owner_name': owner }, { 'repo.name': name }, { secret }],
       });
 
       return foundDocs;

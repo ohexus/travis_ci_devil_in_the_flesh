@@ -19,6 +19,11 @@ class NotificationsController {
 
   async postNotify(req: Request, res: Response): Promise<Response> {
     try {
+      const secret = req.query.secret as string;
+      if (!secret) {
+        throw new Error(LOGS.ERROR.SECRET.NOT_PROVIDED);
+      }
+
       const payload: TravisPayload | null = !!req.body.payload ? (JSON.parse(req.body.payload) as TravisPayload) : null;
       if (!payload || !payload.repository) {
         throw new Error(LOGS.ERROR.TRAVIS.WRONG_PAYLOAD);
@@ -26,7 +31,7 @@ class NotificationsController {
 
       const { repository } = payload;
 
-      const repos = await RepoService.getRepos(repository.owner_name, repository.name);
+      const repos = await RepoService.getRepos(repository.owner_name, repository.name, secret);
       if (!repos.length) {
         throw new Error(LOGS.ERROR.REPO.NOT_FOUND);
       }

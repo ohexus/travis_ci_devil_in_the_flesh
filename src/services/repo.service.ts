@@ -30,8 +30,12 @@ class RepoService {
     return await RepoClass.getRepoByTitle(owner, title);
   }
 
-  async getRepos(owner: GithubRepo['owner_name'], name: GithubRepo['name']): Promise<RepoDoc[]> {
-    return await RepoClass.getRepos(owner, name);
+  async getRepos(
+    owner: GithubRepo['owner_name'],
+    name: GithubRepo['name'],
+    secret: RepoDoc['secret'],
+  ): Promise<RepoDoc[]> {
+    return await RepoClass.getRepos(owner, name, secret);
   }
 
   async getAllReposByChat(telegramId: Chat['telegramId']): Promise<RepoDoc[]> {
