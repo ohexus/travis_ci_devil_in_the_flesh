@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
-import GithubRepo from '../interfaces/entities/GithubRepo';
 
-import { Repo, RepoDoc } from '../interfaces/entities/Repo';
+import GithubRepo from '../interfaces/entities/GithubRepo';
+import { RepoBasic, RepoDoc } from '../interfaces/entities/Repo';
 import { ChatDoc } from '../interfaces/entities/Chat';
 
 const repoSchema: Schema = new Schema(
@@ -9,6 +9,7 @@ const repoSchema: Schema = new Schema(
     owner: { type: Schema.Types.ObjectId, ref: 'Chat', required: true },
     title: { type: String, required: true },
     repo: { type: Schema.Types.Mixed, required: true },
+    secret: { type: String || null, default: null },
   },
   { timestamps: true },
 );
@@ -16,15 +17,26 @@ const repoSchema: Schema = new Schema(
 const RepoModel = model<RepoDoc>('Repo', repoSchema);
 
 export default class RepoClass extends RepoModel {
-  static async addRepo({ owner, title, repo }: Repo): Promise<RepoDoc> {
+  static async addRepo({ owner, title, repo }: RepoBasic): Promise<RepoDoc> {
     try {
       const createdDoc: RepoDoc = await this.create({
         owner,
         title,
         repo,
+        secret: null,
       });
 
       return createdDoc;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  static async addSecret(id: RepoDoc['id'], secret: string): Promise<RepoDoc> {
+    try {
+      const updatedDoc: RepoDoc = await this.findByIdAndUpdate(id, { secret });
+
+      return updatedDoc;
     } catch (error) {
       throw new Error(error.message);
     }

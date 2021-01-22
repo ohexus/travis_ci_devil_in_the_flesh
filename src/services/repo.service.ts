@@ -1,13 +1,17 @@
 import { RepoClass } from '../models';
 import { ChatService } from '.';
 
-import { Repo, RepoDoc } from '../interfaces/entities/Repo';
+import { RepoBasic, RepoDoc } from '../interfaces/entities/Repo';
 import { Chat, ChatDoc } from '../interfaces/entities/Chat';
 import GithubRepo from '../interfaces/entities/GithubRepo';
 
 class RepoService {
-  async addRepo(repo: Repo): Promise<RepoDoc> {
+  async addRepo(repo: RepoBasic): Promise<RepoDoc> {
     return await RepoClass.addRepo(repo);
+  }
+
+  async addSecret(id: RepoDoc['id'], secret: string) {
+    return await RepoClass.addSecret(id, secret);
   }
 
   async deleteRepo(id: RepoDoc['id']): Promise<RepoDoc> {
