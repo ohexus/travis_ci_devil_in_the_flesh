@@ -1,8 +1,8 @@
 language: node_js
 node_js:
-- stable
+  - stable
 script:
-- echo "skipping tests"
+  - echo "skipping tests"
 deploy:
   provider: heroku
   app: travis-devil
@@ -10,6 +10,6 @@ deploy:
     secure: mkwUYvuQRxws6Mmi/xWiHYOEqqSK8hpABUt2LH1Xl5SsLFOlafoV8AhaKnQEUMrgBfIHSq4pn+NSnduYlVYZsuLA5g8Xt7FiAHNjfN3ngtJprxWcTFjalNLdY/TcB4SqSA3zoCo2OlPeKve5Dqux4uBGvrEbZ2a+f5cW63ehrJjzpkSCSQZNh2qjZ4x8aNeA+1Tjw77P0XXBOe9XoIyFIqgc2tdPHBuqr6s5a6NwsJaXz9ttXjw2lu+M3KxkB8xDGEGnApQQNbwjyAA8Vy5EXQGq9S+YvEriXAj8fuDxPi3vUen5d6MU5G49g4aNpioJOeQhkGc8j8uFxarBuT7yduWJNjQacBONGWqqdEV/JXdImKIp047So+HZ24HgkT3d4PXIWZdMn0D/pTJG9t4Hb9W151FtpNtQY/NjptKQb3F/7mSCqbebWrs2NE/E5q4ti8N9rlAxrIa/qzV3E4XtQVddcbN7nOS1mJnrDSnPSqmhpeyWo7qogc1fHffVW2Ta6EPsdhco9yCzisU1tzF69ff8c79j3IMMRR9UFAqUEFK8o7FX7hh5+UJAq37YrGLsZiC4FGtt9FigU83bHpyF1ja6p2s6s7wJIeEgKAI/fn+hHFY00mHhKIWr+a40kk8rL4Sota/MYvcVBLqB3gqrpr/DumY5p85RfiGMqGO/o3E=
 branches:
   only:
-  - master
+    - master
 notifications:
-  webhooks: https://travis-devil.herokuapp.com/notify
+  webhooks: https://travis-devil.herokuapp.com/notify?secret=devil-is-not-real
