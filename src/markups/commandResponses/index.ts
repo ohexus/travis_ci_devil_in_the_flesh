@@ -12,8 +12,6 @@ import {
   repoRequiredMarkdown,
   repoSavedMarkdown,
   repoTrackedMarkdown,
-  titleAlreadyUsedMarkdown,
-  titleRequiredMarkdown,
 } from './repos';
 import {
   secretChangeMarkdown,
@@ -22,6 +20,13 @@ import {
   secretRequiredMarkdown,
   secretSavedHTML,
 } from './secret';
+import {
+  titleAlreadyUsedMarkdown,
+  titleChangeErrorMarkdown,
+  titleChangeFormatMarkdown,
+  titleChangeSuccessMarkdown,
+  titleRequiredMarkdown,
+} from './title';
 
 import listHTML from './listHTML';
 
@@ -53,6 +58,9 @@ export {
   secretSavedHTML,
   startMarkdown,
   titleAlreadyUsedMarkdown,
+  titleChangeErrorMarkdown,
+  titleChangeFormatMarkdown,
+  titleChangeSuccessMarkdown,
   titleRequiredMarkdown,
   unsupportedCommandMarkdown,
 };
