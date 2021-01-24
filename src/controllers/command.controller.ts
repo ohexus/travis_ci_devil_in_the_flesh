@@ -13,10 +13,12 @@ import {
   repoErrorMarkdown,
   repoFormatMarkdown,
   repoNotExistsMarkdown,
+  repoNotFoundMarkdown,
   repoRequiredMarkdown,
   repoSavedMarkdown,
+  secretChangeMarkdown,
   secretErrorMarkdown,
-  secretFormatMarkdown,
+  secretFormatHTML,
   secretRequiredMarkdown,
   secretSavedHTML,
   startMarkdown,
@@ -30,6 +32,7 @@ import logger from '../utils/logger';
 
 import { RepoService, ChatService } from '../services';
 
+import Commands from '../enums/Commands';
 import Steps from '../enums/Steps';
 
 import BotContext from '../interfaces/BotContext';
@@ -106,9 +109,46 @@ class CommandController {
 
         this.setStep(ctx, Steps.SECRET, repoDoc.id);
 
-        ctx.replyWithMarkdownV2(secretFormatMarkdown);
+        ctx.replyWithHTML(secretFormatHTML());
       } else {
         ctx.replyWithMarkdownV2(repoErrorMarkdown);
+      }
+    } catch (err) {
+      logger.error(err);
+    }
+  }
+
+  async onSecretChange(ctx: BotContext): Promise<void> {
+    try {
+      this.setStep(ctx, Steps.CHANGE_SECRET);
+
+      ctx.replyWithMarkdownV2(secretChangeMarkdown);
+    } catch (err) {
+      logger.error(err);
+    }
+  }
+
+  async onSecretChangeReply(ctx: BotContext): Promise<void> {
+    try {
+      const chatDoc = await ChatService.getChatByTelegramId(ctx.message.chat.id);
+
+      if (!!chatDoc) {
+        const [repoTitle] = splitString(ctx.message.text);
+
+        if (!repoTitle) {
+          ctx.replyWithMarkdownV2(titleRequiredMarkdown);
+          return;
+        }
+
+        const repoDoc = await RepoService.getRepoByTitle(chatDoc.id, repoTitle);
+
+        if (!!repoDoc) {
+          this.setStep(ctx, Steps.SECRET, repoDoc.id);
+
+          ctx.replyWithHTML(secretFormatHTML(false));
+        } else {
+          ctx.replyWithMarkdownV2(repoNotFoundMarkdown);
+        }
       }
     } catch (err) {
       logger.error(err);
@@ -124,12 +164,12 @@ class CommandController {
         return;
       }
 
-      const repoDoc = await RepoService.setSecret(ctx.session.addedRepoId, secret);
+      const repoDoc = await RepoService.setSecret(ctx.session.repoIdForSecret, secret);
 
       if (!!repoDoc) {
         ctx.replyWithHTML(secretSavedHTML(secret));
       } else {
-        await RepoService.deleteRepo(ctx.session.addedRepoId);
+        await RepoService.deleteRepo(ctx.session.repoIdForSecret);
 
         ctx.replyWithMarkdownV2(secretErrorMarkdown);
       }
@@ -224,8 +264,8 @@ class CommandController {
 
   async onCancel(ctx: BotContext): Promise<void> {
     try {
-      if (!!ctx.session.addedRepoId) {
-        await RepoService.deleteRepo(ctx.session.addedRepoId);
+      if (!!ctx.session.repoIdForSecret && ctx.session.command.prev !== Commands.CHANGE_SECRET) {
+        await RepoService.deleteRepo(ctx.session.repoIdForSecret);
       }
 
       if (!!ctx.session.step) {
@@ -240,9 +280,9 @@ class CommandController {
     }
   }
 
-  setStep(ctx: BotContext, step: Steps | null, addedRepoId: RepoDoc['id'] | null = null): void {
+  setStep(ctx: BotContext, step: Steps | null, repoIdForSecret: RepoDoc['id'] | null = null): void {
     ctx.session.step = step;
-    ctx.session.addedRepoId = addedRepoId;
+    ctx.session.repoIdForSecret = repoIdForSecret;
   }
 
   clearStep(ctx: BotContext): void {
