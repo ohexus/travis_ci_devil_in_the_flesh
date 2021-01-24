@@ -33,19 +33,19 @@ export default async function commandParserMiddleware(ctx: BotContext, next: Nex
   if (
     isCommandSupported &&
     command !== Commands.CANCEL &&
-    !!ctx.session.addedRepoId &&
+    !!ctx.session.repoIdForSecret &&
     ctx.session.step === Steps.SECRET
   ) {
-    await RepoService.deleteRepo(ctx.session.addedRepoId);
+    await RepoService.deleteRepo(ctx.session.repoIdForSecret);
 
     ctx.session.step = null;
-    ctx.session.addedRepoId = null;
+    ctx.session.repoIdForSecret = null;
   }
 
   ctx.session = isCommandSupported
     ? {
         step: command === Commands.CANCEL ? ctx.session.step : null,
-        addedRepoId: command === Commands.CANCEL ? ctx.session.addedRepoId : null,
+        repoIdForSecret: command === Commands.CANCEL ? ctx.session.repoIdForSecret : null,
         command: {
           prev: ctx.session.command.curr,
           curr: command as Commands,

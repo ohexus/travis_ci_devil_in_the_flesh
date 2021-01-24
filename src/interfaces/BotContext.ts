@@ -7,7 +7,7 @@ import { RepoDoc } from './entities/Repo';
 
 export interface SessionData {
   step: Steps | null;
-  addedRepoId: RepoDoc['id'] | null;
+  repoIdForSecret: RepoDoc['id'] | null;
   command: {
     prev: Commands | null;
     curr: Commands | null;

@@ -5,7 +5,7 @@ export default async function initSessionMiddleware(ctx: BotContext, next: NextF
   if (!ctx.session) {
     ctx.session = {
       step: null,
-      addedRepoId: null,
+      repoIdForSecret: null,
       command: {
         prev: null,
         curr: null,
