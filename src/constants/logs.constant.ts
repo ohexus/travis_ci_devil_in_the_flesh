@@ -32,6 +32,7 @@ const LOGS = {
       NOT_FOUND: 'Repo not found!',
       NOT_PROVIDED: 'No repo provided!',
       INVALID_FORMAT: 'Invalid repo format',
+      DELETE: 'Failed to delete repo',
     },
     TRAVIS: {
       WRONG_PAYLOAD: 'Wrong payload!',
@@ -41,6 +42,9 @@ const LOGS = {
     },
     SECRET: {
       NOT_PROVIDED: 'No secret provided!',
+    },
+    TITLE: {
+      CHANGE: 'Failed to change title',
     },
   },
 };
