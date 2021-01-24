@@ -8,12 +8,20 @@ import {
   repoErrorMarkdown,
   repoFormatMarkdown,
   repoNotExistsMarkdown,
+  repoNotFoundMarkdown,
   repoRequiredMarkdown,
   repoSavedMarkdown,
   titleRequiredMarkdown,
 } from './repos';
+import {
+  secretChangeMarkdown,
+  secretErrorMarkdown,
+  secretFormatHTML,
+  secretRequiredMarkdown,
+  secretSavedHTML,
+} from './secret';
+
 import listHTML from './listHTML';
-import { secretErrorMarkdown, secretFormatMarkdown, secretRequiredMarkdown, secretSavedHTML } from './secret';
 
 const helpMarkdown = readFileSync(`${__dirname}/help.md`, 'utf8');
 const startMarkdown = readFileSync(`${__dirname}/start.md`, 'utf8');
@@ -32,10 +40,12 @@ export {
   repoErrorMarkdown,
   repoFormatMarkdown,
   repoNotExistsMarkdown,
+  repoNotFoundMarkdown,
   repoRequiredMarkdown,
   repoSavedMarkdown,
+  secretChangeMarkdown,
   secretErrorMarkdown,
-  secretFormatMarkdown,
+  secretFormatHTML,
   secretRequiredMarkdown,
   secretSavedHTML,
   startMarkdown,
