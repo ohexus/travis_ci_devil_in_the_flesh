@@ -50,7 +50,7 @@ class CommandController {
         await ChatService.addChat({ telegramId });
       }
 
-      ctx.replyWithMarkdownV2(startMarkdown);
+      await ctx.replyWithMarkdownV2(startMarkdown);
     } catch (err) {
       logger.error(err);
     }
@@ -58,7 +58,7 @@ class CommandController {
 
   async onHelp(ctx: BotContext): Promise<void> {
     try {
-      ctx.replyWithMarkdownV2(helpMarkdown);
+      await ctx.replyWithMarkdownV2(helpMarkdown);
     } catch (err) {
       logger.error(err);
     }
@@ -68,7 +68,7 @@ class CommandController {
     try {
       this.setStep(ctx, Steps.LINK);
 
-      ctx.replyWithMarkdownV2(repoFormatMarkdown);
+      await ctx.replyWithMarkdownV2(repoFormatMarkdown);
     } catch (err) {
       logger.error(err);
     }
@@ -79,17 +79,17 @@ class CommandController {
       const [title, owner, repoName] = splitString(ctx.message.text);
 
       if (!title || !title.length) {
-        ctx.replyWithMarkdownV2(titleRequiredMarkdown);
+        await ctx.replyWithMarkdownV2(titleRequiredMarkdown);
         return;
       }
 
       if (!owner || !owner.length) {
-        ctx.replyWithMarkdownV2(ownerRequiredMarkdown);
+        await ctx.replyWithMarkdownV2(ownerRequiredMarkdown);
         return;
       }
 
       if (!repoName || !repoName.length) {
-        ctx.replyWithMarkdownV2(repoRequiredMarkdown);
+        await ctx.replyWithMarkdownV2(repoRequiredMarkdown);
         return;
       }
 
@@ -97,7 +97,7 @@ class CommandController {
 
       const githubRepo = await getRepoFromGithub(owner, repoName);
       if (!githubRepo) {
-        ctx.replyWithMarkdownV2(repoNotExistsMarkdown);
+        await ctx.replyWithMarkdownV2(repoNotExistsMarkdown);
         return;
       }
 
@@ -109,9 +109,9 @@ class CommandController {
 
         this.setStep(ctx, Steps.SECRET, repoDoc.id);
 
-        ctx.replyWithHTML(secretFormatHTML());
+        await ctx.replyWithHTML(secretFormatHTML());
       } else {
-        ctx.replyWithMarkdownV2(repoErrorMarkdown);
+        await ctx.replyWithMarkdownV2(repoErrorMarkdown);
       }
     } catch (err) {
       logger.error(err);
@@ -125,11 +125,11 @@ class CommandController {
       const repoDocs = await RepoService.getAllReposByChat(ctx.message.chat.id);
 
       if (!!repoDocs.length) {
-        ctx.replyWithHTML(listHTML(repoDocs, false), { disable_web_page_preview: true });
+        await ctx.replyWithHTML(listHTML(repoDocs, false), { disable_web_page_preview: true });
 
-        ctx.replyWithMarkdownV2(secretChangeMarkdown);
+        await ctx.replyWithMarkdownV2(secretChangeMarkdown);
       } else {
-        ctx.replyWithMarkdownV2(noReposMarkdown);
+        await ctx.replyWithMarkdownV2(noReposMarkdown);
       }
     } catch (err) {
       logger.error(err);
@@ -144,7 +144,7 @@ class CommandController {
         const [repoTitle] = splitString(ctx.message.text);
 
         if (!repoTitle) {
-          ctx.replyWithMarkdownV2(titleRequiredMarkdown);
+          await ctx.replyWithMarkdownV2(titleRequiredMarkdown);
           return;
         }
 
@@ -153,9 +153,9 @@ class CommandController {
         if (!!repoDoc) {
           this.setStep(ctx, Steps.SECRET, repoDoc.id);
 
-          ctx.replyWithHTML(secretFormatHTML(false));
+          await ctx.replyWithHTML(secretFormatHTML(false));
         } else {
-          ctx.replyWithMarkdownV2(repoNotFoundMarkdown);
+          await ctx.replyWithMarkdownV2(repoNotFoundMarkdown);
         }
       }
     } catch (err) {
@@ -168,18 +168,18 @@ class CommandController {
       const [secret] = splitString(ctx.message.text);
 
       if (!secret || !secret.length) {
-        ctx.replyWithMarkdownV2(secretRequiredMarkdown);
+        await ctx.replyWithMarkdownV2(secretRequiredMarkdown);
         return;
       }
 
       const repoDoc = await RepoService.setSecret(ctx.session.repoIdForSecret, secret);
 
       if (!!repoDoc) {
-        ctx.replyWithHTML(secretSavedHTML(secret));
+        await ctx.replyWithHTML(secretSavedHTML(secret));
       } else {
         await RepoService.deleteRepo(ctx.session.repoIdForSecret);
 
-        ctx.replyWithMarkdownV2(secretErrorMarkdown);
+        await ctx.replyWithMarkdownV2(secretErrorMarkdown);
       }
 
       this.clearStep(ctx);
@@ -193,9 +193,9 @@ class CommandController {
       const repoDocs = await RepoService.getAllReposByChat(ctx.message.chat.id);
 
       if (!!repoDocs.length) {
-        ctx.replyWithHTML(listHTML(repoDocs, true, 'Your repositories'), { disable_web_page_preview: true });
+        await ctx.replyWithHTML(listHTML(repoDocs, true, 'Your repositories'), { disable_web_page_preview: true });
       } else {
-        ctx.replyWithMarkdownV2(noReposMarkdown);
+        await ctx.replyWithMarkdownV2(noReposMarkdown);
       }
     } catch (err) {
       logger.error(err);
@@ -209,7 +209,7 @@ class CommandController {
       const repoDocs = await RepoService.getAllReposByChat(ctx.message.chat.id);
 
       if (!!repoDocs.length) {
-        ctx.replyWithHTML(
+        await ctx.replyWithHTML(
           listHTML(
             repoDocs,
             false,
@@ -221,7 +221,7 @@ class CommandController {
           },
         );
       } else {
-        ctx.replyWithMarkdownV2(deleteNothingMarkdown);
+        await ctx.replyWithMarkdownV2(deleteNothingMarkdown);
       }
     } catch (err) {
       logger.error(err);
@@ -248,23 +248,23 @@ class CommandController {
 
             this.clearStep(ctx);
           } else {
-            ctx.replyWithMarkdownV2(deleteErrorMarkdown);
+            await ctx.replyWithMarkdownV2(deleteErrorMarkdown);
           }
         } else {
           throw new Error(LOGS.ERROR.CHAT.NOT_FOUND);
         }
       } else {
-        ctx.replyWithMarkdownV2(repoRequiredMarkdown);
+        await ctx.replyWithMarkdownV2(repoRequiredMarkdown);
       }
     } catch (err) {
-      ctx.replyWithMarkdownV2(deleteErrorMarkdown);
+      await ctx.replyWithMarkdownV2(deleteErrorMarkdown);
       logger.error(err);
     }
   }
 
   async onUnsupported(ctx: BotContext): Promise<void> {
     try {
-      ctx.replyWithMarkdownV2(unsupportedCommandMarkdown);
+      await ctx.replyWithMarkdownV2(unsupportedCommandMarkdown);
     } catch (err) {
       logger.error(err);
     }
@@ -282,9 +282,9 @@ class CommandController {
       }
 
       if (!!ctx.session.step) {
-        ctx.replyWithMarkdownV2(cancelSuccessMarkdown);
+        await ctx.replyWithMarkdownV2(cancelSuccessMarkdown);
       } else {
-        ctx.replyWithMarkdownV2(cancelNothingMarkdown);
+        await ctx.replyWithMarkdownV2(cancelNothingMarkdown);
       }
 
       this.clearStep(ctx);
