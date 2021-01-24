@@ -122,7 +122,15 @@ class CommandController {
     try {
       this.setStep(ctx, Steps.CHANGE_SECRET);
 
-      ctx.replyWithMarkdownV2(secretChangeMarkdown);
+      const repoDocs = await RepoService.getAllReposByChat(ctx.message.chat.id);
+
+      if (!!repoDocs.length) {
+        ctx.replyWithHTML(listHTML(repoDocs, false), { disable_web_page_preview: true });
+
+        ctx.replyWithMarkdownV2(secretChangeMarkdown);
+      } else {
+        ctx.replyWithMarkdownV2(noReposMarkdown);
+      }
     } catch (err) {
       logger.error(err);
     }
