@@ -1,5 +1,7 @@
 import { v4 as uuid } from 'uuid';
 
+import { secretAutoDeleteTimeout } from '../constants';
+
 import { Secret, SecretBasic } from '../interfaces/entities/Secret';
 
 class SecretService {
@@ -30,7 +32,7 @@ class SecretService {
   }
 
   autoDelete(id: Secret['id']): void {
-    setTimeout(() => this.deleteSecretById(id), 1000 * 60 * 3); // 3 mins
+    setTimeout(() => this.deleteSecretById(id), secretAutoDeleteTimeout);
   }
 }
 
