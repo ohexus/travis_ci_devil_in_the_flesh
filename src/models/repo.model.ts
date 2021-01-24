@@ -32,9 +32,19 @@ export default class RepoClass extends RepoModel {
     }
   }
 
-  static async setSecret(id: RepoDoc['id'], secret: string): Promise<RepoDoc> {
+  static async setSecret(id: RepoDoc['id'], secret: RepoDoc['secret']): Promise<RepoDoc> {
     try {
       const updatedDoc: RepoDoc = await this.findByIdAndUpdate(id, { secret });
+
+      return updatedDoc;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  static async changeTitle(id: RepoDoc['id'], title: RepoDoc['title']): Promise<RepoDoc> {
+    try {
+      const updatedDoc: RepoDoc = await this.findByIdAndUpdate(id, { title });
 
       return updatedDoc;
     } catch (error) {
