@@ -11,6 +11,8 @@ import {
   repoNotFoundMarkdown,
   repoRequiredMarkdown,
   repoSavedMarkdown,
+  repoTrackedMarkdown,
+  titleAlreadyUsedMarkdown,
   titleRequiredMarkdown,
 } from './repos';
 import {
@@ -43,12 +45,14 @@ export {
   repoNotFoundMarkdown,
   repoRequiredMarkdown,
   repoSavedMarkdown,
+  repoTrackedMarkdown,
   secretChangeMarkdown,
   secretErrorMarkdown,
   secretFormatHTML,
   secretRequiredMarkdown,
   secretSavedHTML,
   startMarkdown,
+  titleAlreadyUsedMarkdown,
   titleRequiredMarkdown,
   unsupportedCommandMarkdown,
 };

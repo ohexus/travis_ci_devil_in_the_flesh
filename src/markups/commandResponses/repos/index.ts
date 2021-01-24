@@ -8,6 +8,8 @@ const repoNotExistsMarkdown = readFileSync(`${__dirname}/repoNotExists.md`, 'utf
 const repoNotFoundMarkdown = readFileSync(`${__dirname}/repoNotFound.md`, 'utf8');
 const repoRequiredMarkdown = readFileSync(`${__dirname}/repoRequired.md`, 'utf8');
 const repoSavedMarkdown = readFileSync(`${__dirname}/repoSaved.md`, 'utf8');
+const repoTrackedMarkdown = readFileSync(`${__dirname}/repoSaved.md`, 'utf8');
+const titleAlreadyUsedMarkdown = readFileSync(`${__dirname}/titleAlreadyUsed.md`, 'utf8');
 const titleRequiredMarkdown = readFileSync(`${__dirname}/titleRequired.md`, 'utf8');
 
 export {
@@ -19,5 +21,7 @@ export {
   repoNotFoundMarkdown,
   repoRequiredMarkdown,
   repoSavedMarkdown,
+  repoTrackedMarkdown,
+  titleAlreadyUsedMarkdown,
   titleRequiredMarkdown,
 };
