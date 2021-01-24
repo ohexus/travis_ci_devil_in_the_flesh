@@ -32,7 +32,7 @@ export default class RepoClass extends RepoModel {
     }
   }
 
-  static async addSecret(id: RepoDoc['id'], secret: string): Promise<RepoDoc> {
+  static async setSecret(id: RepoDoc['id'], secret: string): Promise<RepoDoc> {
     try {
       const updatedDoc: RepoDoc = await this.findByIdAndUpdate(id, { secret });
 

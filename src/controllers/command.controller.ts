@@ -124,7 +124,7 @@ class CommandController {
         return;
       }
 
-      const repoDoc = await RepoService.addSecret(ctx.session.addedRepoId, secret);
+      const repoDoc = await RepoService.setSecret(ctx.session.addedRepoId, secret);
 
       if (!!repoDoc) {
         ctx.replyWithHTML(secretSavedHTML(secret));

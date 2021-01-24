@@ -10,8 +10,8 @@ class RepoService {
     return await RepoClass.addRepo(repo);
   }
 
-  async addSecret(id: RepoDoc['id'], secret: string) {
-    return await RepoClass.addSecret(id, secret);
+  async setSecret(id: RepoDoc['id'], secret: string) {
+    return await RepoClass.setSecret(id, secret);
   }
 
   async deleteRepo(id: RepoDoc['id']): Promise<RepoDoc> {
