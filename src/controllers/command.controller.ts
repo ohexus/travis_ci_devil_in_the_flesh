@@ -24,6 +24,9 @@ import {
   secretSavedHTML,
   startMarkdown,
   titleAlreadyUsedMarkdown,
+  titleChangeErrorMarkdown,
+  titleChangeFormatMarkdown,
+  titleChangeSuccessMarkdown,
   titleRequiredMarkdown,
   unsupportedCommandMarkdown,
 } from '../markups/commandResponses';
@@ -39,7 +42,6 @@ import Steps from '../enums/Steps';
 
 import BotContext from '../interfaces/BotContext';
 import { RepoDoc } from '../interfaces/entities/Repo';
-import { Chat } from '../interfaces/entities/Chat';
 
 class CommandController {
   constructor() {}
@@ -213,6 +215,48 @@ class CommandController {
     }
   }
 
+  async onTitleChange(ctx: BotContext): Promise<void> {
+    try {
+      this.setStep(ctx, Steps.CHANGE_TITLE);
+
+      await ctx.replyWithMarkdownV2(titleChangeFormatMarkdown);
+    } catch (err) {
+      logger.error(err);
+    }
+  }
+
+  async onTitleChangeReply(ctx: BotContext): Promise<void> {
+    try {
+      const [prevTitle, nextTitle] = splitString(ctx.message.text);
+
+      if (!prevTitle || !prevTitle.length || !nextTitle || !nextTitle.length) {
+        ctx.replyWithMarkdownV2(titleRequiredMarkdown);
+        return;
+      }
+
+      const chatDoc = await ChatService.getChatByTelegramId(ctx.message.chat.id);
+      if (!chatDoc) {
+        throw new Error(LOGS.ERROR.TITLE.CHANGE);
+      }
+
+      const repoDoc = await RepoService.getRepoByTitle(chatDoc.id, prevTitle);
+      if (!repoDoc) {
+        throw new Error(LOGS.ERROR.TITLE.CHANGE);
+      }
+
+      const updatedRepoDoc = await RepoService.changeTitle(repoDoc.id, nextTitle);
+      if (!updatedRepoDoc) {
+        throw new Error(LOGS.ERROR.TITLE.CHANGE);
+      }
+
+      await ctx.replyWithMarkdownV2(titleChangeSuccessMarkdown);
+    } catch (err) {
+      logger.error(err);
+
+      await ctx.replyWithMarkdownV2(titleChangeErrorMarkdown);
+    }
+  }
+
   async onList(ctx: BotContext): Promise<void> {
     try {
       const repoDocs = await RepoService.getAllReposByChat(ctx.message.chat.id);
@@ -273,7 +317,7 @@ class CommandController {
 
             this.clearStep(ctx);
           } else {
-            await ctx.replyWithMarkdownV2(deleteErrorMarkdown);
+            throw new Error(LOGS.ERROR.REPO.DELETE);
           }
         } else {
           throw new Error(LOGS.ERROR.CHAT.NOT_FOUND);
@@ -282,8 +326,9 @@ class CommandController {
         await ctx.replyWithMarkdownV2(repoRequiredMarkdown);
       }
     } catch (err) {
-      await ctx.replyWithMarkdownV2(deleteErrorMarkdown);
       logger.error(err);
+
+      await ctx.replyWithMarkdownV2(deleteErrorMarkdown);
     }
   }
 

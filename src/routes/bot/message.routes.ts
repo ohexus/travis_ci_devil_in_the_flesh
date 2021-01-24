@@ -22,6 +22,10 @@ export default async function messageRouter(ctx: BotContext): Promise<void> {
       await CommandController.onSecretChangeReply(ctx);
       break;
 
+    case Steps.CHANGE_TITLE:
+      await CommandController.onTitleChangeReply(ctx);
+      break;
+
     default:
       await CommandController.onHelp(ctx);
       break;

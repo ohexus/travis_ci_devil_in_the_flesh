@@ -22,6 +22,10 @@ export default async function commandRouter(ctx: BotContext): Promise<void> {
       await CommandController.onSecretChange(ctx);
       break;
 
+    case Commands.CHANGE_TITLE:
+      await CommandController.onTitleChange(ctx);
+      break;
+
     case Commands.LIST:
       await CommandController.onList(ctx);
       break;
