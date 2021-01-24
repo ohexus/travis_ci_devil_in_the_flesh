@@ -16,12 +16,14 @@ import {
   repoNotFoundMarkdown,
   repoRequiredMarkdown,
   repoSavedMarkdown,
+  repoTrackedMarkdown,
   secretChangeMarkdown,
   secretErrorMarkdown,
   secretFormatHTML,
   secretRequiredMarkdown,
   secretSavedHTML,
   startMarkdown,
+  titleAlreadyUsedMarkdown,
   titleRequiredMarkdown,
   unsupportedCommandMarkdown,
 } from '../markups/commandResponses';
@@ -37,6 +39,7 @@ import Steps from '../enums/Steps';
 
 import BotContext from '../interfaces/BotContext';
 import { RepoDoc } from '../interfaces/entities/Repo';
+import { Chat } from '../interfaces/entities/Chat';
 
 class CommandController {
   constructor() {}
@@ -74,24 +77,41 @@ class CommandController {
     }
   }
 
+  checkLinkReply(ctx: BotContext, title?: string, owner?: string, repoName?: string): boolean {
+    if (!title || !title.length) {
+      ctx.replyWithMarkdownV2(titleRequiredMarkdown);
+      return false;
+    } else if (!owner || !owner.length) {
+      ctx.replyWithMarkdownV2(ownerRequiredMarkdown);
+      return false;
+    } else if (!repoName || !repoName.length) {
+      ctx.replyWithMarkdownV2(repoRequiredMarkdown);
+      return false;
+    }
+
+    return true;
+  }
+
+  checkIsRepoTitleUsed(ctx: BotContext, repoDocs: RepoDoc[], title: string): boolean {
+    if (!!repoDocs.find((doc) => doc.title === title)) {
+      ctx.replyWithMarkdownV2(titleAlreadyUsedMarkdown);
+      return true;
+    }
+    return false;
+  }
+
+  checkIsRepoTracked(ctx: BotContext, repoDocs: RepoDoc[], owner: string, repoName: string): boolean {
+    if (!!repoDocs.find((doc) => doc.repo.owner_name === owner && doc.repo.name === repoName)) {
+      ctx.replyWithMarkdownV2(repoTrackedMarkdown);
+      return true;
+    }
+    return false;
+  }
+
   async onLinkReply(ctx: BotContext): Promise<void> {
     try {
       const [title, owner, repoName] = splitString(ctx.message.text);
-
-      if (!title || !title.length) {
-        await ctx.replyWithMarkdownV2(titleRequiredMarkdown);
-        return;
-      }
-
-      if (!owner || !owner.length) {
-        await ctx.replyWithMarkdownV2(ownerRequiredMarkdown);
-        return;
-      }
-
-      if (!repoName || !repoName.length) {
-        await ctx.replyWithMarkdownV2(repoRequiredMarkdown);
-        return;
-      }
+      if (!this.checkLinkReply(ctx, title, owner, repoName)) return;
 
       const chatDoc = await ChatService.getChatByTelegramId(ctx.message.chat.id);
 
@@ -102,6 +122,11 @@ class CommandController {
       }
 
       if (!!chatDoc) {
+        const repoDocs = await RepoService.getAllReposByChat(ctx.message.chat.id);
+
+        if (this.checkIsRepoTitleUsed(ctx, repoDocs, title)) return;
+        if (this.checkIsRepoTracked(ctx, repoDocs, owner, repoName)) return;
+
         const repoDoc = await RepoService.addRepo({ owner: chatDoc.id, title, repo: githubRepo });
         await ChatService.addRepo(chatDoc.id, repoDoc.id);
 
