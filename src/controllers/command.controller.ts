@@ -105,7 +105,7 @@ class CommandController {
         const repoDoc = await RepoService.addRepo({ owner: chatDoc.id, title, repo: githubRepo });
         await ChatService.addRepo(chatDoc.id, repoDoc.id);
 
-        ctx.replyWithMarkdownV2(repoSavedMarkdown);
+        await ctx.replyWithMarkdownV2(repoSavedMarkdown);
 
         this.setStep(ctx, Steps.SECRET, repoDoc.id);
 
@@ -273,7 +273,12 @@ class CommandController {
   async onCancel(ctx: BotContext): Promise<void> {
     try {
       if (!!ctx.session.repoIdForSecret && ctx.session.command.prev !== Commands.CHANGE_SECRET) {
-        await RepoService.deleteRepo(ctx.session.repoIdForSecret);
+        const chatDoc = await ChatService.getChatByTelegramId(ctx.message.chat.id);
+
+        if (!!chatDoc) {
+          await RepoService.deleteRepo(ctx.session.repoIdForSecret);
+          await ChatService.deleteRepo(chatDoc.id, ctx.session.repoIdForSecret);
+        }
       }
 
       if (!!ctx.session.step) {
