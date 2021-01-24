@@ -1,4 +1,4 @@
-Please write a secret for the repo to make sure that only you will receive notifications:
+Please type a secret for the repo to make sure that only you will receive notifications:
 _*<your\_secret\_variable\>*_
 
 You can cancel this command by typing /cancel\.
