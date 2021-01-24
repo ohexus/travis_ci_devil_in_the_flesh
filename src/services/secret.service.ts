@@ -19,11 +19,7 @@ class SecretService {
     this.autoDelete(secret.id);
   }
 
-  deleteSecret(owner: Secret['owner'], repoName: Secret['repoName']): void {
-    this.secrets = this.secrets.filter((secret) => secret.owner !== owner && secret.repoName !== repoName);
-  }
-
-  deleteSecretById(id: Secret['id']): void {
+  deleteSecret(id: Secret['id']): void {
     this.secrets = this.secrets.filter((secret) => secret.id !== id);
   }
 
@@ -32,7 +28,7 @@ class SecretService {
   }
 
   autoDelete(id: Secret['id']): void {
-    setTimeout(() => this.deleteSecretById(id), secretAutoDeleteTimeout);
+    setTimeout(() => this.deleteSecret(id), secretAutoDeleteTimeout);
   }
 }
 

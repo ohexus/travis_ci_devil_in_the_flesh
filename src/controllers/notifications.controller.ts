@@ -36,7 +36,7 @@ class NotificationsController {
 
         secret = foundSecret.value;
 
-        SecretService.deleteSecret(repository.owner_name, repository.name);
+        SecretService.deleteSecret(foundSecret.id);
       }
 
       const repos = await RepoService.getRepos(repository.owner_name, repository.name, secret);
