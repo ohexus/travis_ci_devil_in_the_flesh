@@ -48,7 +48,10 @@ class NotificationsController {
         for (let i = 0; i < repos.length; i++) {
           const chat = await ChatService.getChatById(repos[i].owner);
 
-          await bot.telegram.sendMessage(chat.telegramId, buildStatusHTML(payload), { parse_mode: 'HTML' });
+          await bot.telegram.sendMessage(chat.telegramId, buildStatusHTML(payload), {
+            parse_mode: 'HTML',
+            disable_web_page_preview: true,
+          });
         }
 
         return successResponse(res, LOGS.SUCCESS.NOTIFICATION.SEND);
