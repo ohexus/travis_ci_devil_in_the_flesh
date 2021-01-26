@@ -1,6 +1,6 @@
 # Telegram bot for Travis CI
 
-Bot can notify you about build and deploy status and only works from 9:00 am to 2:00 am \(GMT+2\).
+The bot can notify you of build and deploy status and only works from 9:00 am to 2:00 am \(GMT+2\).
 
 You can find bot [here](https://telegram.me/travis_ci_devil_in_the_flesh_bot).
 
