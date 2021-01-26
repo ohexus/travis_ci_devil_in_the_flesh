@@ -8,8 +8,10 @@ export default function buildStatusHTML(payload: TravisPayload): string {
     payload.number
   }</a> (<a href='${payload.compare_url}'>${payload.commit.slice(0, 7)}</a>) of ${payload.repository.owner_name}/${
     payload.repository.name
-  } on branch ${payload.branch} by ${
+  } on branch <b>${payload.branch}</b> by ${
     payload.author_name
   } <i>${payload.status_message.toLowerCase()}</i> in a ${formatTime(payload.duration, 'abbreviation')}.
-  `;
+
+Commit message:
+${payload.message}`;
 }
