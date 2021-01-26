@@ -1,9 +1,9 @@
+import logger from '../../logger';
 import { githubAPI } from '../API';
 
 import GithubRepo from '../../../interfaces/entities/GithubRepo';
-import logger from '../../logger';
 
-export default async function getRepoFromGithub(owner: string, repo: string): Promise<GithubRepo | null> {
+export default async function fetchRepoFromGithub(owner: string, repo: string): Promise<GithubRepo | null> {
   try {
     return await githubAPI.get(`repos/${owner}/${repo}`).then((res) => {
       const { data } = res;
