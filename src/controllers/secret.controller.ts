@@ -5,11 +5,13 @@ import { LOGS } from '../constants';
 import { SecretService } from '../services';
 
 import logger from '../utils/logger';
+import errorHandler from '../utils/http/errorHandler';
+import successResponse from '../utils/http/successResponse';
 
 class SecretController {
   constructor() {}
 
-  postSecret(req: Request, res: Response): void {
+  postSecret(req: Request, res: Response): Response {
     try {
       const { secret, repository } = req.body as { secret: string; repository: string };
       if (!secret) {
@@ -26,8 +28,12 @@ class SecretController {
       }
 
       SecretService.addSecret({ value: secret, owner, repoName });
+
+      return successResponse(res, LOGS.SUCCESS.SECRET.STORED);
     } catch (err) {
       logger.error(err);
+
+      return errorHandler(res, LOGS.ERROR.SECRET.STORED, { error: err });
     }
   }
 }
