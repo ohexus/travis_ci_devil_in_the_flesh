@@ -44,24 +44,20 @@ class NotificationsController {
         throw new Error(LOGS.ERROR.REPO.NOT_FOUND);
       }
 
-      try {
-        for (let i = 0; i < repos.length; i++) {
-          const chat = await ChatService.getChatById(repos[i].owner);
+      for (let i = 0; i < repos.length; i++) {
+        const chat = await ChatService.getChatById(repos[i].owner);
 
-          await bot.telegram.sendMessage(chat.telegramId, buildStatusHTML(payload), {
-            parse_mode: 'HTML',
-            disable_web_page_preview: true,
-          });
-        }
-
-        return successResponse(res, LOGS.SUCCESS.NOTIFICATION.SEND);
-      } catch (err) {
-        throw new Error(LOGS.ERROR.NOTIFICATION.SEND);
+        await bot.telegram.sendMessage(chat.telegramId, buildStatusHTML(payload), {
+          parse_mode: 'HTML',
+          disable_web_page_preview: true,
+        });
       }
+
+      return successResponse(res, LOGS.SUCCESS.NOTIFICATION.SEND);
     } catch (err) {
       logger.error(err);
 
-      return errorHandler(res, err);
+      return errorHandler(res, LOGS.ERROR.NOTIFICATION.SEND, { error: err });
     }
   }
 }
