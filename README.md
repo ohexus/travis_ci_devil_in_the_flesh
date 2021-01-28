@@ -68,36 +68,56 @@ App requires next config:
 
 - /cancel - Cancel current command
 
-## Requests
+## API
 
-### /
+API to the bot server.
 
-#### GET
+### Get main page
 
-##### Description:
+`GET /`
+
+#### Description:
 
 Default app request.
 
-##### Responses
+#### Responses
 
 | Code | Description   | Payload    | Message                        |
 | ---- | ------------- | ---------- | ------------------------------ |
 | 200  | Home response | App works! | Request completed successfully |
 
-### /notify/
+### Notification event
 
-#### POST
+`POST /notify?secret=secret_value`
 
-##### Description:
+#### Description:
 
 Request to bot notifications.
 
 Requires travis payload format that you can find [here](https://docs.travis-ci.com/user/notifications/#webhooks-delivery-format).
 
-##### Responses
+#### Responses
 
-| Code | Description                           | Payload | Message                        |
-| ---- | ------------------------------------- | ------- | ------------------------------ |
-| 200  | Response after bot notify             | null    | Notification send successfully |
-| 400  | Response after bot notification error | null    | Failed to send notification    |
-| 400  | Unexpected error                      | null    | Error message                  |
+| Code | Description               | Payload    | Message                        |
+| ---- | ------------------------- | ---------- | ------------------------------ |
+| 200  | Response after bot notify | null       | Notification send successfully |
+| 400  | Error                     | error: err | Failed to send notification    |
+
+### Store secret
+
+`POST /secret/`
+
+#### Description:
+
+Request to store secret for 1 min.
+
+Requires secret and repository in body:
+
+`{"secret": string, "repository": 'owner/repo_name'}`
+
+#### Responses
+
+| Code | Description                  | Payload    | Message                    |
+| ---- | ---------------------------- | ---------- | -------------------------- |
+| 200  | Response after secret stored | null       | Secret stored successfully |
+| 400  | Error                        | error: err | Failed to store secret     |
