@@ -14,6 +14,9 @@ const LOGS = {
     NOTIFICATION: {
       SEND: 'Notification send successfully',
     },
+    SECRET: {
+      STORED: 'Secret stored successfully',
+    },
   },
   ERROR: {
     HTTP: {
@@ -42,6 +45,7 @@ const LOGS = {
     },
     SECRET: {
       NOT_PROVIDED: 'No secret provided!',
+      STORED: 'Failed to store secret',
     },
     TITLE: {
       CHANGE: 'Failed to change title',
